@@ -130,7 +130,7 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 			<DialogTrigger asChild>
 				<TriggerButton isSMDown={isSMDown} />
 			</DialogTrigger>
-			<DialogContent className="max-w-[96dvw] min-w-[85dvw] max-h-[90dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
+			<DialogContent className="max-w-[96dvw] min-w-[92dvw] max-h-[92dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center">
