@@ -58,6 +58,10 @@ function RotateButtonList({ modifyAngle }: { modifyAngle: (factor: 'right' | 'le
 	);
 }
 
+function DocumentErrorMessage() {
+	return <p className="py-3 px-6 w-full bg-red-100 text-red-400 rounded-full">Error happened to get a file</p>;
+}
+
 function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePreviewProps) {
 	const isReady = containerWidth > 0;
 
@@ -66,7 +70,7 @@ function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePre
 			{!isReady ? (
 				<PdfPreviewSkeleton pageCount={1} />
 			) : (
-				<Document file={file}>
+				<Document file={file} error={DocumentErrorMessage}>
 					<Page
 						devicePixelRatio={2.5}
 						loading={
@@ -134,10 +138,7 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center gap-2">
-						<DialogDescription
-							className="min-w-0 flex-1 inline-flex items-center gap-1.5
-               py-1.5 px-2 w-[200px] bg-gray-100 text-gray-500 text-xs font-medium
-               border border-gray-200 rounded-md truncate">
+						<DialogDescription className="min-w-0 flex-1 max-w-[60dvw] sm:max-w-none inline-flex items-center gap-1.5 py-1.5 px-2bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md">
 							<Asterisk size={12} />
 							<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
 						</DialogDescription>

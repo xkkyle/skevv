@@ -10,12 +10,8 @@ import { type PageItem, PdfPreviewSkeleton } from '@/components';
 import { SCROLL_BAR_WIDTH, useDebouncedEffect } from '@/hooks';
 import { PDF_DEFAULT_HEIGHT } from '@/constant';
 
-// if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
-// 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-// }
-
-if (typeof window !== 'undefined') {
-	pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
+	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 }
 
 const VirtualPage = dynamic(() => import('../pdf/VirtualPage'), {
@@ -33,7 +29,7 @@ interface PdfPreviewProps {
 }
 
 function DocumentErrorMessage() {
-	return <p className="p-3 w-full bg-red-100 text-red-400 rounded-full">Error happened to get a file</p>;
+	return <p className="py-3 px-6 w-full bg-red-100 text-red-400 rounded-full">Error happened to get a file</p>;
 }
 
 export default function PdfPreview({ scrollParentRef, file, pages, startPageNumber = 1, containerWidth }: PdfPreviewProps) {
