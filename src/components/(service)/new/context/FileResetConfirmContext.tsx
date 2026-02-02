@@ -59,7 +59,7 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
 							<DrawerDescription className="text-start">{description}</DrawerDescription>
 						</DrawerHeader>
-						<DrawerFooter>
+						<DrawerFooter className="p-3 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
 							<Button type="button" size="lg" onClick={onReset} className="col-span-1">
 								Confirm
 							</Button>
