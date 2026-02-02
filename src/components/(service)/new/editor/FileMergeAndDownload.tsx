@@ -125,15 +125,15 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 							</ul>
 							{isMobile ? (
 								<DrawerFooter className="mt-3">
+									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
 									<DrawerClose asChild>
 										<Button type="button" variant="outline" size="lg">
 											Cancel
 										</Button>
 									</DrawerClose>
-									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
 								</DrawerFooter>
 							) : (
-								<DialogFooter className="mt-3">
+								<DialogFooter className="mt-6">
 									<DialogClose asChild>
 										<Button type="button" variant="outline" size="lg">
 											Cancel
