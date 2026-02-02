@@ -130,18 +130,21 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 			<DialogTrigger asChild>
 				<TriggerButton isSMDown={isSMDown} />
 			</DialogTrigger>
-			<DialogContent className="max-w-[92dvw] min-w-[85dvw] max-h-[90dvh] w-auto h-auto overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
+			<DialogContent className="w-[92dvw] sm:w-[85dvw] xl:w-[60dvw] max-w-[720px] max-h-[90dvh] overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center">
-						<DialogDescription className="inline-flex shrink-0 items-center gap-1.5 py-1.5 px-2 w-fit bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md overflow-hidden whitespace-nowrap text-ellipsis">
+						<DialogDescription
+							className="min-w-0 flex-1 inline-flex items-center gap-1.5
+               py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium
+               border border-gray-200 rounded-md truncate">
 							<Asterisk size={12} />
 							<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
 						</DialogDescription>
 						<RotateButtonList modifyAngle={modifyAngle} />
 					</div>
 				</DialogHeader>
-				<div ref={containerRef} className="pb-3 px-3">
+				<div ref={containerRef}>
 					{isReady && file ? (
 						<PagePreview file={file} pageNumber={pageNumber} containerWidth={containerWidth} rotatedAngle={rotatedAngle} />
 					) : (
