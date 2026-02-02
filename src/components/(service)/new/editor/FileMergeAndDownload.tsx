@@ -119,6 +119,10 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 									</FormItem>
 								)}
 							/>
+							<ul className="flex justify-between items-center gap-2">
+								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
+								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
+							</ul>
 							{isMobile ? (
 								<DrawerFooter className="grid grid-cols-2 gap-3 mt-4 px-0">
 									<DrawerClose asChild>
@@ -140,10 +144,6 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 							)}
 						</form>
 					</Form>
-					<ul className="flex justify-between items-center gap-2">
-						<li className="p-3 bg-gray-100 font-medium rounded-lg">{files.length} files</li>
-						<li className="p-3 bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
-					</ul>
 				</>
 			)}
 			{step === 'download' && (
