@@ -94,7 +94,7 @@ export default function FileListPanel() {
 						<h3
 							className="flex items-center gap-2 p-1.5 text-md font-bold rounded-md cursor-pointer transition-colors hover:bg-muted"
 							onClick={toggleAll}>
-							<span className="text-gray-700">Files</span>
+							<span>Files</span>
 							<ChevronRight size={18} className={`${isSomeAccordionOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</h3>
 					</div>

@@ -31,9 +31,11 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 				} sm:cursor-pointer`}>
 				<div className="flex items-center gap-2">
 					<div className="flex items-center gap-1 shrink-0">
-						<div className="p-1 rounded-md hover:bg-muted touch-none" style={{ touchAction: 'none' }} {...listeners}>
-							<GripVertical />
-						</div>
+						<Button asChild size="icon-sm" variant="ghost">
+							<div className="p-1 rounded-md hover:bg-muted touch-none" style={{ touchAction: 'none' }} {...listeners}>
+								<GripVertical />
+							</div>
+						</Button>
 						<Button type="button" size="icon-sm" variant="ghost" className="touch-none" onClick={() => toggleFilePages(file.id)}>
 							<ChevronRight className={`${filePage?.isOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</Button>
