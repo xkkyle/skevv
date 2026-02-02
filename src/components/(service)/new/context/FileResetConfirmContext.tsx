@@ -59,17 +59,17 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
 							<DrawerDescription className="text-start">{description}</DrawerDescription>
 						</DrawerHeader>
-					</DrawerContent>
-					<DrawerFooter>
-						<Button type="button" size="lg" onClick={onReset} className="col-span-1">
-							Confirm
-						</Button>
-						<DrawerClose asChild>
-							<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
-								Cancel
+						<DrawerFooter>
+							<Button type="button" size="lg" onClick={onReset} className="col-span-1">
+								Confirm
 							</Button>
-						</DrawerClose>
-					</DrawerFooter>
+							<DrawerClose asChild>
+								<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
+									Cancel
+								</Button>
+							</DrawerClose>
+						</DrawerFooter>
+					</DrawerContent>
 				</Drawer>
 			) : (
 				<Dialog open={isOpen} onOpenChange={toggle}>
