@@ -138,9 +138,9 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center gap-2">
-						<DialogDescription className="min-w-0 flex-1 max-w-[60dvw] sm:max-w-none inline-flex items-center gap-1.5 py-1.5 px-2bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md">
+						<DialogDescription className="min-w-0 flex-1 max-w-[60dvw] sm:max-w-none inline-flex items-center gap-1.5 py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md truncate">
 							<Asterisk size={12} />
-							<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
+							<span className="text-start">{description}</span>
 						</DialogDescription>
 						<RotateButtonList modifyAngle={modifyAngle} />
 					</div>
