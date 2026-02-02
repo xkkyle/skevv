@@ -104,14 +104,6 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 		<div className={`flex flex-col gap-3 p-3 mb-3 sm:p-0 sm:mb-0`}>
 			{step === 'merge' && (
 				<>
-					<div className="flex justify-between items-center">
-						<div className="flex items-center gap-1 font-medium text-sm">File Counts</div>
-						<p className="py-1.5 px-3 bg-gray-100 font-medium rounded-lg">{files.length}</p>
-					</div>
-					<div className="flex justify-between items-center">
-						<div className="flex items-center gap-1 font-medium text-sm">Page Counts</div>
-						<p className="py-1.5 px-3 bg-gray-100 font-medium rounded-lg">{totalPageCount}</p>
-					</div>
 					<Form {...form}>
 						<form className="mt-3" onSubmit={form.handleSubmit(onSubmit)}>
 							<FormField
@@ -148,6 +140,10 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 							)}
 						</form>
 					</Form>
+					<ul className="flex justify-between items-center gap-2">
+						<li className="p-3 bg-gray-100 font-medium rounded-lg">{files.length} files</li>
+						<li className="p-3 bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
+					</ul>
 				</>
 			)}
 			{step === 'download' && (
