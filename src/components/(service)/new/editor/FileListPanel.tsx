@@ -16,6 +16,7 @@ export default function FileListPanel() {
 	} = useDropzoneFiles();
 
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
+	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 	const isMDDown = useMediaQuery(screenSize.MAX_MD);
 
 	const fileInputId = React.useId();
@@ -162,8 +163,8 @@ export default function FileListPanel() {
 			</div>
 			<div
 				className={`${
-					isMDDown ? 'fixed' : 'absolute'
-				} left-0 bottom-0 px-3 pt-3 pb-6 w-full bg-light rounded-xl border-t border-muted md:pb-3 sm:rounded-t-none`}>
+					isSMDown ? 'fixed' : 'absolute'
+				} left-0 bottom-0 px-3 pt-3 pb-6 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none md:pb-3`}>
 				{files.length !== 0 && <FileMergeAndDownloadContext files={files} isOpen={isConfirmContextOpen} toggle={setIsConfirmContextOpen} />}
 			</div>
 		</div>
