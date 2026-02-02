@@ -27,7 +27,7 @@ export default function FileListPanel() {
 
 	const desktopSensors = useSensors(
 		useSensor(PointerSensor, {
-			activationConstraint: { distance: 6 }, // 클릭/스크롤 오작동 줄이기
+			activationConstraint: { distance: 6 },
 		}),
 		useSensor(MouseSensor, {
 			activationConstraint: { distance: 6 },
@@ -88,7 +88,7 @@ export default function FileListPanel() {
 	};
 
 	return (
-		<div className="relative col-span-full p-3 bg-white border border-muted rounded-2xl md:col-span-2">
+		<div className="relative col-span-full p-3 border-muted md:col-span-2 md:border-r">
 			<div className="flex flex-col gap-2 max-h-screen h-full">
 				<div className="flex justify-between items-center">
 					<div>
@@ -165,7 +165,7 @@ export default function FileListPanel() {
 				className={cn(
 					isSMDown ? 'fixed' : 'absolute',
 					'left-0 right-0 bottom-0',
-					'px-3 pt-3 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none',
+					'px-3 pt-3 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none sm:rounded-br-none',
 					isSMDown ? 'pb-[calc(env(safe-area-inset-bottom)+1.5rem)]' : 'pb-3',
 				)}>
 				{files.length !== 0 && <FileMergeAndDownloadContext files={files} isOpen={isConfirmContextOpen} toggle={setIsConfirmContextOpen} />}

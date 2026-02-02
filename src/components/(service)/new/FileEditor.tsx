@@ -10,7 +10,7 @@ export default function FileEditor() {
 		<div className="flex flex-col gap-3 w-full h-[calc(100dvh-var(--global-layout-nav-height)-6*var(--global-layout-padding)-var(--service-nav-height))] min-h-0 overflow-hidden sm:h-[calc(100dvh-2*var(--global-layout-padding))]">
 			<ServiceNav />
 
-			<div className="grid grid-rows-1 flex-1 gap-3 min-h-0 h-full md:grid-cols-6 md:max-w-full">
+			<div className="grid grid-rows-1 flex-1 min-h-0 h-full border border-muted rounded-2xl md:grid-cols-6 md:max-w-full">
 				<FileListPanel />
 				{is_MD_Up && <FilePreviewListPanel />}
 			</div>
