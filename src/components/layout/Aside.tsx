@@ -21,16 +21,13 @@ export default function Aside() {
 			<aside
 				className={`fixed flex-col top-0 left-0 hidden py-2 h-full w-14 max-h-screen bg-white overflow-y-auto overflow-x-hidden border-muted border-r z-10 sm:sticky sm:flex lg:w-56 lg:p-3`}>
 				<div className="flex flex-col justify-between gap-4 h-full lg:gap-4">
-					<header className="flex justify-center items-center min-h-9 lg:justify-between">
+					<header className="flex justify-center items-center min-h-9">
 						<h1 className="flex justify-center item-center">
-							<Link href={route.SERVICE.ROOT} className="inline-flex justify-center items-center gap-1.5 h-7 font-black text-lg">
-								<Image src={skevvSVG} alt={'Skevv'} width={24} height={24} className="inline-block w-full h-full" priority />
+							<Link href={route.SERVICE.ROOT} className="inline-flex justify-center items-center gap-2 h-7 font-black text-lg">
+								<Image src={skevvSVG} alt={'Skevv'} width={24} height={24} priority />
 								<span className="hidden tracking-tight font-mono lg:inline">SKEVV</span>
 							</Link>
 						</h1>
-						<Button type="button" variant="ghost" size="icon-sm" className="hidden lg:inline-flex">
-							<Search size={18} className="text-gray-900" />
-						</Button>
 					</header>
 					<nav className="flex flex-col flex-1 gap-2 sm:px-2 lg:px-0">
 						{links.map(({ title, to, icon }) => (
