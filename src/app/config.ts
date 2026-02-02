@@ -1,6 +1,3 @@
-// google Analytics를 활용한 방문자 수 체크를 위한 config
-// Config of Visitor Check on GA4
-
 export const SiteConfig = {
 	url: 'https://skew.run',
 	subUrl: 'https://skevv.vercel.app',
@@ -8,12 +5,12 @@ export const SiteConfig = {
 	title: {
 		default: 'Skevv',
 		HOME: 'Skevv',
-		NEW: 'Skevv | New Merge',
-		ARCHIVES: 'Skevv | Documents',
+		NEW: 'New Merge | Skevv',
+		ARCHIVES: 'Archives | Skevv',
 	},
 	description: {
-		default: 'Skevv | Lightweight PDF Editor',
+		default: 'Skevv | an easy and lightweight PDF Editor',
 	},
-	subtitle: 'This is a lightweight pdf editor app',
+	subtitle: 'This is an easy lightweight pdf editor app',
 	copyright: 'Skevv © All rights reserved.',
 };

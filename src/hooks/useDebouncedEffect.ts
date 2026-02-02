@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { debounce } from 'es-toolkit';
 
@@ -8,18 +9,21 @@ interface UseDebouncedEffectProps {
 }
 
 export default function useDebouncedEffect({ callback, effectTriggers, delay = 150 }: UseDebouncedEffectProps) {
-	const ref = React.useRef<() => void | null>(null);
-	ref.current = callback;
+	const callbackRef = React.useRef(callback);
+
+	React.useEffect(() => {
+		callbackRef.current = callback;
+	}, [callback]);
 
 	React.useEffect(() => {
 		const debouncedCallback = debounce(() => {
-			ref.current?.();
+			callbackRef.current();
 		}, delay);
 
 		debouncedCallback();
 
 		return () => {
-			debouncedCallback?.cancel();
+			debouncedCallback.cancel();
 		};
 	}, [...effectTriggers, delay]);
 }

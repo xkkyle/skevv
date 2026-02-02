@@ -1,7 +1,7 @@
-import { openDB, saveTempFile, TEMP_FILE_STORE } from './db';
 import { FileWithPath } from 'react-dropzone';
-import { type PageItem } from '@/components';
 import { toast } from 'sonner';
+import { openDB, saveTempFile, TEMP_FILE_STORE } from './db';
+import { type PageItem } from '@/components';
 
 /**
  * {

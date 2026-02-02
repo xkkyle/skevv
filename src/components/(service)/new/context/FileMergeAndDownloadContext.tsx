@@ -49,12 +49,13 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const [step, setStep] = React.useState<'merge' | 'download'>('merge');
 
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+	const pageCount = getTotalPageCount(files);
+
 	const title = 'Merge and Download';
 	const description =
 		step === 'merge'
 			? `Check your current work status here. ${isSMDown ? 'Press' : 'Click'} merge when you're done.`
-			: `Your PDF is ready to download`;
-	const pageCount = getTotalPageCount(files);
+			: `Your ${pageCount} pages of PDF is ready to download`;
 
 	const onClose = () => toggle(false);
 
@@ -68,7 +69,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					<DrawerContent>
 						<DrawerHeader className="p-3 text-left">
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
-							<DrawerDescription className="flex items-center gap-2 py-1 px-2 bg-gray-100 text-xs text-gray-500 text-start font-semibold rounded-md">
+							<DrawerDescription className="flex items-center gap-2 p-2 w-fit bg-gray-100 text-xs text-gray-500 text-start font-semibold rounded-md">
 								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
 								{description}
 							</DrawerDescription>

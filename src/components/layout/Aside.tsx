@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import { FilePlus, LayoutList, Search } from 'lucide-react';
+import { FilePlus, FolderOpenDot, Search } from 'lucide-react';
 import skevvSVG from '@/public/favicon/favicon.svg';
 import { UserProfile, Button } from '@/components';
 import { route } from '@/constant';
 
 const links = [
 	{ title: 'Merge PDF', to: route.SERVICE.WRITE, icon: <FilePlus size={18} className="text-gray-900" /> },
-	{ title: 'Archives', to: route.SERVICE.ARCHIVES, icon: <LayoutList size={18} className="text-gray-900" /> },
+	{ title: 'Archives', to: route.SERVICE.ARCHIVES, icon: <FolderOpenDot size={18} className="text-gray-900" /> },
 ] as const;
 
 export default function Aside() {
@@ -51,11 +51,11 @@ export default function Aside() {
 						))}
 					</nav>
 				</div>
-				<div className="flex flex-col gap-1 px-1 md:px-0">
+				<div className="flex flex-col gap-1 mx-2 md:mx-0">
 					<UserProfile />
 				</div>
 				<small className="text-default mx-3 mb-2 mt-1 hidden text-[0.5rem] opacity-50 lg:block">
-					© 2025{' '}
+					© 2026{' '}
 					<Link href={route.SERVICE.ROOT} className="hover:underline" target="_blank">
 						SKEVV
 					</Link>

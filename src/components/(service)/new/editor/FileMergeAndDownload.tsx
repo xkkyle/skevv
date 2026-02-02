@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Asterisk, Download, RotateCcw } from 'lucide-react';
+import { Download, RotateCcw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -55,12 +55,10 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 
 	const [mergeResult, setMergeResult] = React.useState<Pick<MergeFileResult, 'downloadUrl' | 'fileName'> | null>(null);
 	const totalPageCount = getTotalPageCount(files);
-	console.log('step', step, 'merge result', mergeResult);
 
 	React.useEffect(() => {
 		return () => {
 			if (mergeResult?.downloadUrl) {
-				console.log(mergeResult?.downloadUrl);
 				cleanupDownloadUrl(mergeResult.downloadUrl);
 				setStep('merge');
 			}
@@ -103,19 +101,15 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 	};
 
 	return (
-		<div className={`flex flex-col gap-3 ${isMobile ? 'p-3' : ''} mb-3`}>
+		<div className={`flex flex-col gap-3 p-3 mb-3 sm:p-0 sm:mb-0`}>
 			{step === 'merge' && (
 				<>
 					<div className="flex justify-between items-center">
-						<div className="flex items-center gap-1 font-medium text-sm">
-							<Asterisk size={16} /> File Counts
-						</div>
+						<div className="flex items-center gap-1 font-medium text-sm">File Counts</div>
 						<p className="py-1.5 px-3 bg-gray-100 font-medium rounded-lg">{files.length}</p>
 					</div>
 					<div className="flex justify-between items-center">
-						<div className="flex items-center gap-1 font-medium text-sm">
-							<Asterisk size={16} /> Page Counts
-						</div>
+						<div className="flex items-center gap-1 font-medium text-sm">Page Counts</div>
 						<p className="py-1.5 px-3 bg-gray-100 font-medium rounded-lg">{totalPageCount}</p>
 					</div>
 					<Form {...form}>
@@ -157,13 +151,13 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 				</>
 			)}
 			{step === 'download' && (
-				<div className="flex flex-col w-full mt-3">
+				<div className="flex flex-col gap-3 w-full mt-8">
 					<Button type="button" variant="default" size="lg" onClick={handleDownload}>
 						<Download />
-						Download <span className="font-black">{totalPageCount}</span> pages of
+						Download
 						<span className="inline-block truncate max-w-[200px] font-black">{mergeResult?.fileName}</span>
 					</Button>
-					<Button type="button" variant="ghost" size="lg" className="mt-3" onClick={reset}>
+					<Button type="button" variant="outline" size="lg" onClick={reset}>
 						<RotateCcw />
 						Reset
 					</Button>

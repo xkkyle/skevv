@@ -15,6 +15,7 @@ export default function FileListPanel() {
 		setFiles,
 	} = useDropzoneFiles();
 
+	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 	const isMDDown = useMediaQuery(screenSize.MAX_MD);
 
 	const fileInputId = React.useId();
@@ -23,16 +24,25 @@ export default function FileListPanel() {
 
 	const { fileAccordions, isSomeAccordionOpen, toggle, toggleAll, closeAll } = useFileAccordions({ files });
 
-	const sensors = useSensors(
-		useSensor(PointerSensor),
-		useSensor(MouseSensor),
+	const desktopSensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: { distance: 6 }, // 클릭/스크롤 오작동 줄이기
+		}),
+		useSensor(MouseSensor, {
+			activationConstraint: { distance: 6 },
+		}),
+	);
+
+	const mobileSensors = useSensors(
 		useSensor(TouchSensor, {
 			activationConstraint: {
-				tolerance: 2,
-				distance: 2, // prevent mal-function of finger touch
+				delay: 120,
+				tolerance: 6,
 			},
 		}),
 	);
+
+	const sensors = isXSDown ? mobileSensors : desktopSensors;
 
 	useKeyboardTrigger({
 		handler: (e: KeyboardEvent) => {
@@ -84,7 +94,7 @@ export default function FileListPanel() {
 						<h3
 							className="flex items-center gap-2 p-1.5 text-md font-bold rounded-md cursor-pointer transition-colors hover:bg-muted"
 							onClick={toggleAll}>
-							<span>Uploaded PDFs</span>
+							<span className="text-gray-700">Files</span>
 							<ChevronRight size={18} className={`${isSomeAccordionOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</h3>
 					</div>

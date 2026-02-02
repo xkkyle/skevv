@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/refs */
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React from 'react';
 
 export default function useIsMountedRef() {
-	const ref = useRef({ isMounted: true }).current;
+	const ref = React.useRef({ isMounted: true }).current;
 
-	useEffect(() => {
+	React.useEffect(() => {
 		ref.isMounted = true;
 
 		return () => {

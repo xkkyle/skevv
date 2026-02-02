@@ -38,7 +38,7 @@ const ASYNC_PDF_MESSAGE = {
 	},
 	MERGE: {
 		SUCCESS: {
-			MERGE_FILE: 'Successfully merged',
+			MERGE_FILE: `Successfully merged. Let's download it`,
 		},
 		ERROR: {
 			CANCEL_FILE_SAVE: 'File Saving is canceled',

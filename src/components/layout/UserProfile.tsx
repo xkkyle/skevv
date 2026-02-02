@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronDown, ChevronUp, LogOut, Settings, Sparkle, User } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogOut, Plus, Settings, Sparkle, User } from 'lucide-react';
 import {
 	MotionBlock,
 	DropdownMenu,
@@ -8,9 +8,11 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
+	Button,
 } from '@/components';
 import { useUserStore } from '@/store';
 import { route } from '@/constant';
+import { cn } from '@/lib/utils';
 
 interface UserProfileProps {
 	inSideNav?: boolean;
@@ -24,17 +26,18 @@ export default function UserProfile({ inSideNav = false }: UserProfileProps) {
 			{userState?.user ? (
 				<DropdownMenu>
 					<DropdownMenuTrigger
-						className={`flex ${
-							inSideNav ? 'justify-between' : 'justify-center'
-						} items-center gap-2 py-2 px-3 w-full rounded-lg hover:bg-muted transition-colors cursor-pointer lg:justify-between`}
+						className={cn(
+							`flex items-center gap-2 py-2 px-3 w-full rounded-lg hover:bg-muted transition-colors cursor-pointer lg:justify-between`,
+							inSideNav ? 'justify-between' : 'justify-center',
+						)}
 						aria-label="Open Profile Menu">
 						<div className="flex items-center gap-2">
 							<div className="ui-flex-center w-4 h-4 rounded-[9999px] bg-gray-900">
 								{/* <img src="#" alt="not yet" className="block w-full h-full" /> */}
 							</div>
-							<span className={`${inSideNav ? 'inline-block' : 'hidden'} font-bold lg:inline`}>User</span>
+							<span className={cn(`font-bold lg:inline`, inSideNav ? 'inline-block' : 'hidden')}>User</span>
 						</div>
-						<span className={`${inSideNav ? 'inline-block' : 'hidden'} lg:inline`}>
+						<span className={cn(`lg:inline`, inSideNav ? 'inline-block' : 'hidden')}>
 							{inSideNav ? <ChevronDown size={18} className="text-gray-900" /> : <ChevronUp size={18} className="text-gray-900" />}
 						</span>
 					</DropdownMenuTrigger>
@@ -75,12 +78,12 @@ export default function UserProfile({ inSideNav = false }: UserProfileProps) {
 				</DropdownMenu>
 			) : (
 				<MotionBlock className="ui-flex-center">
-					<Link
-						href={route.AUTH.LOGIN}
-						className="ui-flex-center gap-0 py-3 px-3 w-full font-semibold bg-gray-900 border border-muted text-white text-center rounded-lg cursor-pointer transition-colors hover:bg-primary/90 sm:px-2 lg:gap-2">
-						<User size={18} />
-						<span className="hidden lg:inline">Join the service</span>
-					</Link>
+					<Button asChild variant="outline" className="ui-flex-center gap-0 w-full sm:px-2 lg:gap-2">
+						<Link href={route.AUTH.LOGIN} className="">
+							<Plus size={18} />
+							<span className="hidden lg:inline">Get started</span>
+						</Link>
+					</Button>
 				</MotionBlock>
 			)}
 		</>

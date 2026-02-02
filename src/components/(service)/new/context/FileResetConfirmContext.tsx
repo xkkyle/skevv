@@ -20,10 +20,6 @@ import {
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
-	Kbd,
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
 } from '@/components/ui';
 import { useDropzoneFiles, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constant';
@@ -41,16 +37,9 @@ interface FileResetConfirmBodyProps {
 
 function TriggerButton({ open, ...props }: { open: () => void }) {
 	return (
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<Button type="button" size="icon-md" onClick={open} className="rounded-full" {...props}>
-					<RotateCcw size={21} />
-				</Button>
-			</TooltipTrigger>
-			<TooltipContent>
-				<Kbd>Reset All Files</Kbd>
-			</TooltipContent>
-		</Tooltip>
+		<Button type="button" size="icon-md" onClick={open} className="rounded-full" {...props}>
+			<RotateCcw size={21} />
+		</Button>
 	);
 }
 
@@ -87,6 +76,7 @@ function FileResetConfirmBody({ isMobile, close, resetFiles }: FileResetConfirmB
 export default function FileResetConfirmContext({ isOpen, toggle }: FileResetConfirmContextProps) {
 	const { onReset } = useDropzoneFiles();
 	const isMobile = useMediaQuery(screenSize.MAX_SM);
+
 	const title = 'Reset Current Files';
 	const description = 'Do you really mind to reset files?';
 

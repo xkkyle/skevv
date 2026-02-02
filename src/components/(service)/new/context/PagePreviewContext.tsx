@@ -13,12 +13,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-	Drawer,
-	DrawerContent,
-	DrawerDescription,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
 	PageItem,
 	PdfDocumentErrorMessage,
 	PdfPreviewSkeleton,
@@ -132,58 +126,29 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 	const description = `${page.id.split('.pdf')[0]}.pdf`;
 
 	return (
-		<>
-			{isSMDown ? (
-				<Drawer open={isOpen} onOpenChange={toggle}>
-					<DrawerTrigger asChild>
-						<TriggerButton isSMDown={isSMDown} />
-					</DrawerTrigger>
-					<DrawerContent className="max-h-[85vh] px-0 h-auto overflow-y-auto scrollbar-thin">
-						<DrawerHeader className="p-3">
-							<DrawerTitle className="text-lg text-start">{title}</DrawerTitle>
-							<div className="flex justify-between items-center">
-								<DrawerDescription className="inline-flex shrink-0 items-center gap-1.5 py-1.5 px-2 max-w-[200px] bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md overflow-hidden whitespace-nowrap text-ellipsis">
-									<Asterisk size={12} className="shrink-0" />
-									<span className="truncate">{description}</span>
-								</DrawerDescription>
-								<RotateButtonList modifyAngle={modifyAngle} />
-							</div>
-						</DrawerHeader>
-						<div ref={containerRef} className="pb-3 px-3">
-							{isReady && file ? (
-								<PagePreview file={file} pageNumber={pageNumber} containerWidth={containerWidth} rotatedAngle={rotatedAngle} />
-							) : (
-								<PdfDocumentErrorMessage />
-							)}
-						</div>
-					</DrawerContent>
-				</Drawer>
-			) : (
-				<Dialog open={isOpen} onOpenChange={toggle}>
-					<DialogTrigger asChild>
-						<TriggerButton isSMDown={isSMDown} />
-					</DialogTrigger>
-					<DialogContent className="max-w-[90dvw] min-w-[80dvw] max-h-[90dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
-						<DialogHeader>
-							<DialogTitle className="text-lg">{title}</DialogTitle>
-							<div className="flex justify-between items-center">
-								<DialogDescription className="inline-flex shrink-0 items-center gap-1.5 py-1.5 px-2 w-fit bg-gray-100 text-gray-500 text-xs font-medium  border border-gray-200 rounded-md overflow-hidden whitespace-nowrap text-ellipsis">
-									<Asterisk size={12} />
-									<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
-								</DialogDescription>
-								<RotateButtonList modifyAngle={modifyAngle} />
-							</div>
-						</DialogHeader>
-						<div ref={containerRef}>
-							{isReady && file ? (
-								<PagePreview file={file} pageNumber={pageNumber} containerWidth={containerWidth} rotatedAngle={rotatedAngle} />
-							) : (
-								<PdfDocumentErrorMessage />
-							)}
-						</div>
-					</DialogContent>
-				</Dialog>
-			)}
-		</>
+		<Dialog open={isOpen} onOpenChange={toggle}>
+			<DialogTrigger asChild>
+				<TriggerButton isSMDown={isSMDown} />
+			</DialogTrigger>
+			<DialogContent className="max-w-[90dvw] min-w-[80dvw] max-h-[90dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
+				<DialogHeader>
+					<DialogTitle className="text-lg">{title}</DialogTitle>
+					<div className="flex justify-between items-center">
+						<DialogDescription className="inline-flex shrink-0 items-center gap-1.5 py-1.5 px-2 w-fit bg-gray-100 text-gray-500 text-xs font-medium  border border-gray-200 rounded-md overflow-hidden whitespace-nowrap text-ellipsis">
+							<Asterisk size={12} />
+							<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
+						</DialogDescription>
+						<RotateButtonList modifyAngle={modifyAngle} />
+					</div>
+				</DialogHeader>
+				<div ref={containerRef}>
+					{isReady && file ? (
+						<PagePreview file={file} pageNumber={pageNumber} containerWidth={containerWidth} rotatedAngle={rotatedAngle} />
+					) : (
+						<PdfDocumentErrorMessage />
+					)}
+				</div>
+			</DialogContent>
+		</Dialog>
 	);
 }

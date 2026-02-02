@@ -36,7 +36,7 @@ export default function useDropzoneFiles() {
 
 		try {
 			if (rejections.length) {
-				toast.warning(`업로드한 ${rejections.length}개의 파일은 PDF 파일이 아닙니다`);
+				toast.warning(`Uploaded ${rejections.length} files are not PDF type`);
 			}
 
 			const asyncFiles = await toast
