@@ -7,6 +7,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-ki
 import { Button, MotionBlock, SortableFile, FileMergeAndDownloadContext, Input, AnimateSpinner, FileInsertSkeleton } from '@/components';
 import { useDropzoneFiles, useFileAccordions, useKeyboardTrigger, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constant';
+import { cn } from '@/lib/utils';
 
 export default function FileListPanel() {
 	const {
@@ -17,7 +18,6 @@ export default function FileListPanel() {
 
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
-	const isMDDown = useMediaQuery(screenSize.MAX_MD);
 
 	const fileInputId = React.useId();
 	const [isConfirmContextOpen, setIsConfirmContextOpen] = React.useState(false);
@@ -162,9 +162,12 @@ export default function FileListPanel() {
 				</DndContext>
 			</div>
 			<div
-				className={`${
-					isSMDown ? 'fixed' : 'absolute'
-				} left-0 bottom-0 px-3 pt-3 pb-6 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none md:pb-3`}>
+				className={cn(
+					isSMDown ? 'fixed' : 'absolute',
+					'left-0 right-0 bottom-0',
+					'px-3 pt-3 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none',
+					isSMDown ? 'pb-[calc(env(safe-area-inset-bottom)+1.5rem)]' : 'pb-3',
+				)}>
 				{files.length !== 0 && <FileMergeAndDownloadContext files={files} isOpen={isConfirmContextOpen} toggle={setIsConfirmContextOpen} />}
 			</div>
 		</div>

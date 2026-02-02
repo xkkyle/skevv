@@ -34,7 +34,7 @@ export default async function ArchivesPage() {
 	const archives = data.map(mapArchiveToView);
 
 	return (
-		<section className="p-3 bg-light">
+		<section className="p-3 bg-light rounded-t-4xl sm:rounded-t-none">
 			<h2 className="mb-4 text-xl font-black sm:text-2xl">Archives</h2>
 			<Wip
 				message={

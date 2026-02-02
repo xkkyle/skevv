@@ -51,7 +51,7 @@ export default function Aside() {
 						))}
 					</nav>
 				</div>
-				<div className="flex flex-col gap-1 mx-2 md:mx-0">
+				<div className="flex flex-col gap-1 mx-2 lg:mx-0">
 					<UserProfile />
 				</div>
 				<small className="text-default mx-3 mb-2 mt-1 hidden text-[0.5rem] opacity-50 lg:block">
