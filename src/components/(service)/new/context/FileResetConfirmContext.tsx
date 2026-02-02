@@ -29,47 +29,11 @@ interface FileResetConfirmContextProps {
 	toggle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface FileResetConfirmBodyProps {
-	isMobile: boolean;
-	close: () => void;
-	resetFiles: () => void;
-}
-
 function TriggerButton({ open, ...props }: { open: () => void }) {
 	return (
 		<Button type="button" size="icon-md" onClick={open} className="rounded-full" {...props}>
 			<RotateCcw size={21} />
 		</Button>
-	);
-}
-
-function FileResetConfirmBody({ isMobile, close, resetFiles }: FileResetConfirmBodyProps) {
-	return (
-		<>
-			{isMobile ? (
-				<DrawerFooter className="grid grid-cols-2 gap-3 mb-3 py-4 px-3 sm:mb-0">
-					<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
-						Cancel
-					</Button>
-					<DrawerClose asChild>
-						<Button type="button" size="lg" onClick={resetFiles} className="col-span-1">
-							Confirm
-						</Button>
-					</DrawerClose>
-				</DrawerFooter>
-			) : (
-				<DialogFooter className="grid grid-cols-2 gap-3 mb-3 sm:mb-0">
-					<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
-						Cancel
-					</Button>
-					<DialogClose asChild>
-						<Button type="button" size="lg" onClick={resetFiles} className="col-span-1">
-							Confirm
-						</Button>
-					</DialogClose>
-				</DialogFooter>
-			)}
-		</>
 	);
 }
 
@@ -93,10 +57,19 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 					<DrawerContent>
 						<DrawerHeader className="p-3 text-left">
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
-							<DrawerDescription className="my-2 font-medium text-start">{description}</DrawerDescription>
+							<DrawerDescription className="text-start">{description}</DrawerDescription>
 						</DrawerHeader>
-						<FileResetConfirmBody isMobile={isMobile} close={close} resetFiles={onReset} />
 					</DrawerContent>
+					<DrawerFooter className="grid grid-cols-2 gap-3 mb-3 py-4 px-3 sm:mb-0">
+						<DrawerClose asChild>
+							<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
+								Cancel
+							</Button>
+						</DrawerClose>
+						<Button type="button" size="lg" onClick={onReset} className="col-span-1">
+							Confirm
+						</Button>
+					</DrawerFooter>
 				</Drawer>
 			) : (
 				<Dialog open={isOpen} onOpenChange={toggle}>
@@ -106,9 +79,19 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 					<DialogContent className="w-[500px]" aria-describedby="File Reset Confirm Dialog Content">
 						<DialogHeader>
 							<DialogTitle className="text-lg">{title}</DialogTitle>
-							<DialogDescription className="my-2 font-medium text-start">{description}</DialogDescription>
+							<DialogDescription className="text-start">{description}</DialogDescription>
 						</DialogHeader>
-						<FileResetConfirmBody isMobile={isMobile} close={close} resetFiles={onReset} />
+						<DialogFooter className="grid grid-cols-2 gap-3 mb-3 sm:mb-0">
+							<DialogClose asChild>
+								<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
+									Cancel
+								</Button>
+							</DialogClose>
+
+							<Button type="button" size="lg" onClick={onReset} className="col-span-1">
+								Confirm
+							</Button>
+						</DialogFooter>
 					</DialogContent>
 				</Dialog>
 			)}

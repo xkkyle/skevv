@@ -51,10 +51,10 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 	const pageCount = getTotalPageCount(files);
 
-	const title = 'Merge and Download';
+	const title = step === 'merge' ? 'Merge Files' : 'Download merged file';
 	const description =
 		step === 'merge'
-			? `Check your current work status here. ${isSMDown ? 'Press' : 'Click'} merge when you're done.`
+			? `Check infos here. ${isSMDown ? 'Press' : 'Click'} merge when you're done.`
 			: `Your ${pageCount} pages of PDF is ready to download`;
 
 	const onClose = () => toggle(false);
@@ -67,7 +67,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 						<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
 					</DrawerTrigger>
 					<DrawerContent>
-						<DrawerHeader className="p-3 text-left">
+						<DrawerHeader className="gap-2 p-3 text-left">
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
 							<DrawerDescription className="flex items-center gap-2 p-2 w-fit bg-gray-100 text-xs text-gray-500 text-start font-semibold rounded-md">
 								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
@@ -85,7 +85,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					<DialogContent className="max-w-[500px]">
 						<DialogHeader>
 							<DialogTitle className="text-xl">{title}</DialogTitle>
-							<DialogDescription className="flex items-center gap-2 py-2 px-2 bg-gray-100 text-xs text-gray-500 font-semibold rounded-md">
+							<DialogDescription className="flex items-center gap-2 p-2 bg-gray-100 text-xs text-gray-500 font-semibold rounded-md">
 								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
 								{description}
 							</DialogDescription>

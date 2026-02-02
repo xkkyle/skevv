@@ -54,7 +54,7 @@ export default function Aside() {
 				<div className="flex flex-col gap-1 mx-2 lg:mx-0">
 					<UserProfile />
 				</div>
-				<small className="text-default mx-3 mb-2 mt-1 hidden text-[0.5rem] opacity-50 lg:block">
+				<small className="text-default mx-3 my-2 hidden text-[0.5rem] opacity-50 lg:block">
 					© 2026{' '}
 					<Link href={route.SERVICE.ROOT} className="hover:underline" target="_blank">
 						SKEVV
