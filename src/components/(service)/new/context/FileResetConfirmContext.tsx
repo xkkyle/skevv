@@ -60,15 +60,15 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 							<DrawerDescription className="text-start">{description}</DrawerDescription>
 						</DrawerHeader>
 					</DrawerContent>
-					<DrawerFooter className="grid grid-cols-2 gap-3 mb-3 py-4 px-3 sm:mb-0">
+					<DrawerFooter>
+						<Button type="button" size="lg" onClick={onReset} className="col-span-1">
+							Confirm
+						</Button>
 						<DrawerClose asChild>
 							<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
 								Cancel
 							</Button>
 						</DrawerClose>
-						<Button type="button" size="lg" onClick={onReset} className="col-span-1">
-							Confirm
-						</Button>
 					</DrawerFooter>
 				</Drawer>
 			) : (
@@ -81,14 +81,14 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 							<DialogTitle className="text-lg">{title}</DialogTitle>
 							<DialogDescription className="text-start">{description}</DialogDescription>
 						</DialogHeader>
-						<DialogFooter className="grid grid-cols-2 gap-3 mb-3 sm:mb-0">
+						<DialogFooter>
 							<DialogClose asChild>
-								<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
+								<Button type="button" variant="outline" size="lg" onClick={close}>
 									Cancel
 								</Button>
 							</DialogClose>
 
-							<Button type="button" size="lg" onClick={onReset} className="col-span-1">
+							<Button type="button" size="lg" onClick={onReset}>
 								Confirm
 							</Button>
 						</DialogFooter>
