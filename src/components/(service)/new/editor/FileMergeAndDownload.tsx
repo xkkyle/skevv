@@ -124,7 +124,7 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
 							</ul>
 							{isMobile ? (
-								<DrawerFooter>
+								<DrawerFooter className="mt-3">
 									<DrawerClose asChild>
 										<Button type="button" variant="outline" size="lg">
 											Cancel
@@ -133,7 +133,7 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
 								</DrawerFooter>
 							) : (
-								<DialogFooter>
+								<DialogFooter className="mt-3">
 									<DialogClose asChild>
 										<Button type="button" variant="outline" size="lg">
 											Cancel
