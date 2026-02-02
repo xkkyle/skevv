@@ -35,14 +35,11 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effec
 
 		const targetStyle = getComputedStyle(target);
 		const paddingX = (parseFloat(targetStyle.paddingLeft) || 0) + (parseFloat(targetStyle.paddingRight) || 0);
-		// const borderWidth = parseFloat(targetStyle.borderWidth) || 0;
+		const borderWidth = parseFloat(targetStyle.borderWidth) || 0;
 
-		// const currentWidth = width - paddingX - 2 * SCROLL_BAR_WIDTH - 2 * borderWidth;
+		const currentWidth = width - paddingX - 2 * SCROLL_BAR_WIDTH - 2 * borderWidth;
 
-		// clientWidth = content + padding (스크롤바/보더 제외)
-		const contentWidth = target.clientWidth - paddingX;
-
-		setContainerWidth(prevWidth => (prevWidth !== contentWidth ? contentWidth : prevWidth));
+		setContainerWidth(prevWidth => (prevWidth !== currentWidth ? currentWidth : prevWidth));
 	};
 
 	const throttledResize = React.useMemo(() => throttle(handleResize, THROTTLE_TIME), [handleResize]);
@@ -53,17 +50,17 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effec
 	}, []);
 
 	// browser size effect
-	// React.useEffect(() => {
-	// 	if (!containerRef.current) return;
+	React.useEffect(() => {
+		if (!containerRef.current) return;
 
-	// 	handleResize();
+		handleResize();
 
-	// 	window.addEventListener('resize', handleResize);
+		window.addEventListener('resize', handleResize);
 
-	// 	return () => {
-	// 		window.removeEventListener('resize', handleResize);
-	// 	};
-	// }, [...effectTriggers]);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, [...effectTriggers]);
 
 	// container resizing
 	React.useEffect(() => {
