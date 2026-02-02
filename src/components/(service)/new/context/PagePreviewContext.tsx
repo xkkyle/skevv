@@ -133,7 +133,7 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 			<DialogContent className="max-w-[96dvw] min-w-[92dvw] max-h-[92dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
-					<div className="flex justify-between items-center">
+					<div className="flex justify-between items-center gap-2">
 						<DialogDescription
 							className="min-w-0 flex-1 inline-flex items-center gap-1.5
                py-1.5 px-2 w-[200px] bg-gray-100 text-gray-500 text-xs font-medium
