@@ -119,23 +119,23 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 									</FormItem>
 								)}
 							/>
-							<ul className="flex justify-between items-center gap-2">
+							<ul className="flex justify-between items-center gap-2 mt-3">
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
 							</ul>
 							{isMobile ? (
-								<DrawerFooter className="grid grid-cols-2 gap-3 mt-4 px-0">
+								<DrawerFooter>
 									<DrawerClose asChild>
-										<Button type="button" variant="outline" size="lg" className="col-span-1">
+										<Button type="button" variant="outline" size="lg">
 											Cancel
 										</Button>
 									</DrawerClose>
 									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
 								</DrawerFooter>
 							) : (
-								<DialogFooter className="grid grid-cols-2 gap-3 mt-8">
+								<DialogFooter>
 									<DialogClose asChild>
-										<Button type="button" variant="outline" size="lg" className="col-span-1">
+										<Button type="button" variant="outline" size="lg">
 											Cancel
 										</Button>
 									</DialogClose>

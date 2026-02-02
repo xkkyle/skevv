@@ -69,7 +69,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					<DrawerContent>
 						<DrawerHeader className="gap-2 p-3 text-left">
 							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
-							<DrawerDescription className="flex items-center gap-2 p-2 w-fit text-sm text-gray-500 text-start font-medium">
+							<DrawerDescription className="flex items-center gap-2 w-fit text-sm text-gray-500 text-start font-medium">
 								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
 								{description}
 							</DrawerDescription>
@@ -85,7 +85,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					<DialogContent className="max-w-[500px]">
 						<DialogHeader>
 							<DialogTitle className="text-xl">{title}</DialogTitle>
-							<DialogDescription className="flex items-center gap-2 p-2 text-sm text-gray-500 font-medium">
+							<DialogDescription className="flex items-center gap-2 text-sm text-gray-500 font-medium">
 								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
 								{description}
 							</DialogDescription>
