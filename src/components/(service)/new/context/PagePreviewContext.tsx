@@ -47,7 +47,7 @@ function TriggerButton({ isSMDown, ...props }: { isSMDown: boolean }) {
 
 function RotateButtonList({ modifyAngle }: { modifyAngle: (factor: 'right' | 'left') => void }) {
 	return (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-1.5">
 			<Button type="button" size="icon-sm" variant="outline" onClick={() => modifyAngle('left')}>
 				<RotateCcw />
 			</Button>
@@ -92,7 +92,7 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 
 	const { containerRef, containerWidth } = useResizableObserver<HTMLDivElement>({
-		initialWidth: typeof window !== 'undefined' && isSMDown ? 320 : window.innerWidth * 0.5,
+		initialWidth: typeof window !== 'undefined' && isSMDown ? 300 : window.innerWidth * 0.5,
 	});
 
 	const isReady = containerWidth > 0;
@@ -130,13 +130,13 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 			<DialogTrigger asChild>
 				<TriggerButton isSMDown={isSMDown} />
 			</DialogTrigger>
-			<DialogContent className="w-[92dvw] sm:w-[85dvw] xl:w-[60dvw] max-w-[720px] max-h-[90dvh] overflow-y-auto">
+			<DialogContent className="max-w-[96dvw] min-w-[85dvw] max-h-[90dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center">
 						<DialogDescription
 							className="min-w-0 flex-1 inline-flex items-center gap-1.5
-               py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium
+               py-1.5 px-2 w-[200px] bg-gray-100 text-gray-500 text-xs font-medium
                border border-gray-200 rounded-md truncate">
 							<Asterisk size={12} />
 							<span className="text-start whitespace-nowrap text-ellipsis">{description}</span>
