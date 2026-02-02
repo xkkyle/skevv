@@ -11,7 +11,7 @@ interface MergeButtonProps {
 
 export default function FileMergeButton({ isLoading, Loading }: MergeButtonProps) {
 	return (
-		<Button type="submit" size="icon-lg" className="col-span-1 w-full">
+		<Button type="submit" size="lg">
 			{isLoading ? Loading : <Combine size={18} />}
 			Merge
 		</Button>

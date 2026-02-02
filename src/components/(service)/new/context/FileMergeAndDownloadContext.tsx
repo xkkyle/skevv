@@ -31,11 +31,7 @@ interface FileMergeAndDownloadContextProps {
 
 function TriggerButton({ pageCount, isSMDown, ...props }: { pageCount: number; isSMDown: boolean }) {
 	return (
-		<Button
-			type="button"
-			size="icon-lg"
-			className={`flex justify-center items-center gap-4 w-full px-${isSMDown ? 'auto' : '4'}`}
-			{...props}>
+		<Button type="button" size="lg" className={`flex justify-center items-center gap-4 w-full px-${isSMDown ? 'auto' : '4'}`} {...props}>
 			<div className="flex items-center gap-2 overflow-hidden text-ellipsis ">
 				<FilePlus size={18} />
 				Merge {pageCount} Pages

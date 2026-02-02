@@ -119,7 +119,7 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 									</FormItem>
 								)}
 							/>
-							<ul className="flex justify-between items-center gap-2 mt-3">
+							<ul className="flex justify-between items-center gap-2 my-3">
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
 							</ul>
