@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Button, Greeting } from '@/components';
-import { route } from '@/constant';
+import { route } from '@/constants';
 import { SiteConfig } from '../config';
 
 export const metadata: Metadata = {

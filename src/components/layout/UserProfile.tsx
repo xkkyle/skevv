@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronDown, ChevronUp, LogOut, Plus, Settings, Sparkle, User } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogIn, LogOut, Settings, Sparkle, User } from 'lucide-react';
 import {
 	MotionBlock,
 	DropdownMenu,
@@ -11,7 +11,7 @@ import {
 	Button,
 } from '@/components';
 import { useUserStore } from '@/store';
-import { route } from '@/constant';
+import { route } from '@/constants';
 import { cn } from '@/lib/utils';
 
 interface UserProfileProps {
@@ -77,11 +77,11 @@ export default function UserProfile({ inSideNav = false }: UserProfileProps) {
 					</DropdownMenuContent>
 				</DropdownMenu>
 			) : (
-				<MotionBlock className="ui-flex-center">
-					<Button asChild variant="outline" className="ui-flex-center gap-0 w-full sm:px-2 lg:gap-2">
+				<MotionBlock className="ui-flex-center w-full">
+					<Button asChild variant="outline" size="default" className="w-full">
 						<Link href={route.AUTH.LOGIN} className="">
-							<Plus size={18} />
-							<span className="hidden lg:inline">Get started</span>
+							<LogIn size={18} />
+							<span className="group-data-[state=collapsed]:hidden">Get started</span>
 						</Link>
 					</Button>
 				</MotionBlock>

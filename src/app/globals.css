@@ -68,7 +68,7 @@
 	--chart-3: oklch(0.398 0.07 227.392);
 	--chart-4: oklch(0.828 0.189 84.429);
 	--chart-5: oklch(0.769 0.188 70.08);
-	--sidebar: oklch(0.985 0.002 247.839);
+	--sidebar: oklch(100% 0.00011 271.152);
 	--sidebar-foreground: oklch(0.13 0.028 261.692);
 	--sidebar-primary: oklch(0.21 0.034 264.665);
 	--sidebar-primary-foreground: oklch(0.985 0.002 247.839);
@@ -77,7 +77,7 @@
 	--sidebar-border: oklch(0.928 0.006 264.531);
 	--sidebar-ring: oklch(0.707 0.022 261.325);
 
-	--global-layout-nav-height: 66px;
+	--global-layout-nav-height: 48px;
 	--global-layout-padding: 12px;
 	--service-nav-height: 36px;
 	--windowOS-scrollbar-width: 6px;
@@ -300,5 +300,14 @@
 
 	.bg-gradient-indigo-gray-200 {
 		@apply bg-radial-[at_40%_80%] from-gray-300 via-gray-500 to-indigo-200;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
 	}
 }

@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 
 interface FileTargetStore {
-	targetId: string;
-	setTargetId: (id: string) => void;
+	targetId: number;
+	setTargetId: (id: number) => void;
 }
 
 const useFileTargetStore = create<FileTargetStore>(set => ({
-	targetId: '',
-	setTargetId: (id: string) => set({ targetId: id }),
+	targetId: 0,
+	setTargetId: (id: number) => set({ targetId: id }),
 }));
 
 export default useFileTargetStore;

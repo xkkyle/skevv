@@ -1,7 +1,7 @@
 import React from 'react';
 import { ServiceNav, FileListPanel, FilePreviewListPanel } from '@/components';
 import { useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 export default function FileEditor() {
 	const is_MD_Up = useMediaQuery(screenSize.MIN_MD);

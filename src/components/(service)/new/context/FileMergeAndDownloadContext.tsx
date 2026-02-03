@@ -21,7 +21,7 @@ import {
 } from '@/components';
 import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;

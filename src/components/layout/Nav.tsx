@@ -6,7 +6,7 @@ import React from 'react';
 import { ArrowRightIcon, X } from 'lucide-react';
 import skevvSVG from '@/public/favicon/favicon.svg';
 import { MotionBlock, Button, UserProfile } from '@/components';
-import { route } from '@/constant';
+import { route } from '@/constants';
 import { cn } from '@/lib/utils';
 
 const Menu = ({ className }: { className?: string }) => {
@@ -23,17 +23,16 @@ export default function Nav() {
 
 	return (
 		<>
-			<nav id="layout-nav" className={cn('fixed flex justify-center w-full pt-3 px-3 z-40 sm:hidden', isSideNavOpen ? 'bg-white' : '')}>
-				<div className="flex justify-between items-center gap-4 w-full px-4 py-3 min-h-[var(--global-layout-nav-height)] border border-muted rounded-full bg-white backdrop-blur-lg">
-					<h1 className="inline-flex justify-center items-center" onClick={() => setIsSideNavOpen(false)}>
+			<nav id="layout-nav" className={cn('fixed flex justify-center w-full z-40 md:hidden', isSideNavOpen ? 'bg-white' : '')}>
+				<div className="flex justify-between items-center gap-4 w-full px-3 py-2 h-[var(--global-layout-nav-height)] border border-muted bg-white backdrop-blur-lg">
+					<h1 className="inline-flex justify-center items-center px-2" onClick={() => setIsSideNavOpen(false)}>
 						<Link href={route.SERVICE.ROOT} className="inline-flex items-center gap-2 h-7 shrink-0">
 							<Image src={skevvSVG} alt={'Skevv'} width={24} height={24} priority />
-							<span className="font-black text-xl">SKEVV</span>
 						</Link>
 					</h1>
 					<Button
 						type="button"
-						size="icon-lg"
+						size="icon-sm"
 						variant="ghost"
 						className={cn(`rounded-full`, isSideNavOpen ? 'bg-light' : 'bg-none')}
 						onClick={toggle}>
@@ -45,7 +44,7 @@ export default function Nav() {
 			<div
 				id="layout-side-navigation"
 				className={cn(
-					`fixed top-[calc(var(--global-layout-padding)+var(--global-layout-nav-height))] left-0 right-0 flex flex-col px-3 w-full bg-white z-20 overflow-hidden transition-[max-height] duration-200 ease-[cubic-bezier(0.22, 1, 0.36, 1)] md:hidden`,
+					`fixed top-[var(--global-layout-nav-height))] left-0 right-0 flex flex-col px-3 w-full bg-white z-20 overflow-hidden transition-[max-height] duration-200 ease-[cubic-bezier(0.22, 1, 0.36, 1)] md:hidden`,
 					isSideNavOpen ? 'max-h-full' : 'max-h-0',
 				)}>
 				<MotionBlock onClick={toggle} className="rounded-lg">
@@ -64,6 +63,7 @@ export default function Nav() {
 						<ArrowRightIcon size={20} />
 					</Link>
 				</MotionBlock>
+				<div className="w-full h-px rounded-full bg-muted" />
 				<div className="flex justify-between items-center mx-2 min-h-[60px] lg:mx-0">
 					<UserProfile inSideNav={true} />
 				</div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 import { useMediaQuery } from '@/hooks';
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';

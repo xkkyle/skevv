@@ -22,7 +22,7 @@ import {
 	DrawerTrigger,
 } from '@/components/ui';
 import { useDropzoneFiles, useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 interface FileResetConfirmContextProps {
 	isOpen: boolean;

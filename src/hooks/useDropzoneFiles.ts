@@ -5,7 +5,7 @@ import { DropEvent, FileRejection, FileWithPath, useDropzone } from 'react-dropz
 import { toast } from 'sonner';
 import { type RawFileItem, getCountedPages } from '@/components';
 import { useFileStore } from '@/store';
-import { PDF_HQ } from '@/constant';
+import { PDF_HQ } from '@/constants';
 
 const inputId = {
 	OUTER: 'file-dropzone-outer',

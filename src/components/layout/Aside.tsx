@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import { FilePlus, FolderOpenDot, Search } from 'lucide-react';
+import { FilePlus, FolderOpenDot } from 'lucide-react';
 import skevvSVG from '@/public/favicon/favicon.svg';
-import { UserProfile, Button } from '@/components';
-import { route } from '@/constant';
+import { UserProfile } from '@/components';
+import { route } from '@/constants';
 
 const links = [
 	{ title: 'Merge PDF', to: route.SERVICE.WRITE, icon: <FilePlus size={18} className="text-gray-900" /> },

@@ -1,4 +1,5 @@
-import { Aside, Main, Nav } from '@/components/layout';
+import { SidebarProvider } from '@/components';
+import { AppSidebar, Main, Nav } from '@/components/layout';
 import { ReactQueryProvider } from '@/providers';
 
 export default function RootLayout({
@@ -10,9 +11,11 @@ export default function RootLayout({
 		<div className="flex flex-col min-h-screen">
 			<div className="flex flex-1">
 				<ReactQueryProvider>
-					<Aside />
-					<Nav />
-					<Main>{children}</Main>
+					<SidebarProvider>
+						<AppSidebar />
+						<Nav />
+						<Main>{children}</Main>
+					</SidebarProvider>
 				</ReactQueryProvider>
 			</div>
 		</div>

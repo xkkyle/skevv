@@ -5,7 +5,7 @@ import React, { Suspense } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { AnimateSpinner, Button, getTotalPageCount } from '@/components';
 import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 const PdfPreview = dynamic(() => import('../pdf/PdfPreview'), {
 	ssr: false,
@@ -25,7 +25,7 @@ export default function FilePreviewListPanel() {
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
 	const { containerRef, containerWidth } = useResizableObserver<HTMLDivElement>({
-		initialWidth: typeof window !== 'undefined' && isXSDown ? 320 : window.innerWidth * 0.5,
+		initialWidth: typeof window !== 'undefined' ? (isXSDown ? 300 : window.innerWidth * 0.5) : 300,
 	});
 
 	return (

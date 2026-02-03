@@ -12,7 +12,7 @@ export default function FileDropZone() {
 	const fileInputId = React.useId();
 
 	return (
-		<div className="relative w-full h-full pb-3 sm:pb-0">
+		<div className="relative w-full h-full pb-6 sm:pb-0">
 			<MotionBlock
 				{...getRootProps()}
 				className={`h-full ${

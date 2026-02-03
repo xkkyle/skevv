@@ -30,7 +30,7 @@ import {
 	cleanupDownloadUrl,
 } from '@/components';
 import { useDropzoneFiles, useLoading, useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 interface FileNameSetterFormProps {
 	files: ProcessedFileList;
@@ -124,7 +124,7 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
 							</ul>
 							{isMobile ? (
-								<DrawerFooter className="mt-3">
+								<DrawerFooter className="my-3 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
 									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
 									<DrawerClose asChild>
 										<Button type="button" variant="outline" size="lg">

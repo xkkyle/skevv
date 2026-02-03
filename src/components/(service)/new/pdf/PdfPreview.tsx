@@ -8,7 +8,8 @@ import { FileWithPath } from 'react-dropzone';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { type PageItem, PdfPreviewSkeleton } from '@/components';
 import { SCROLL_BAR_WIDTH, useDebouncedEffect } from '@/hooks';
-import { PDF_DEFAULT_HEIGHT } from '@/constant';
+import { PDF_DEFAULT_HEIGHT } from '@/constants';
+import { useFileTargetStore } from '@/store';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;

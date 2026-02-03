@@ -1,7 +1,7 @@
 import { PDFDocument } from 'pdf-lib';
 import { FileWithPath } from 'react-dropzone';
 import { pipe, chunk, toArray } from '@fxts/core';
-import { PDF_HQ } from '@/constant';
+import { PDF_HQ } from '@/constants';
 
 interface PageItem {
 	id: `${string}-page-${number}`;

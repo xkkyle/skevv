@@ -5,7 +5,6 @@ import { pdfjs, Document, Page } from 'react-pdf';
 import { FileWithPath } from 'react-dropzone';
 import { Asterisk, RotateCcw, RotateCw, SquareMousePointer } from 'lucide-react';
 import {
-	AnimateSpinner,
 	Button,
 	Dialog,
 	DialogContent,
@@ -18,7 +17,7 @@ import {
 	PdfPreviewSkeleton,
 } from '@/components';
 import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
-import { screenSize } from '@/constant';
+import { screenSize } from '@/constants';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -37,9 +36,9 @@ interface PagePreviewProps {
 	rotatedAngle: number;
 }
 
-function TriggerButton({ isSMDown, ...props }: { isSMDown: boolean }) {
+function TriggerButton({ isXSDown, ...props }: { isXSDown: boolean }) {
 	return (
-		<Button type="button" size="icon-sm" variant="ghost" className={`px-${isSMDown ? 'auto' : '4'}`} {...props}>
+		<Button type="button" size="icon-sm" variant="ghost" className={`px-${isXSDown ? 'auto' : '4'}`} {...props}>
 			<SquareMousePointer className="text-gray-500" />
 		</Button>
 	);
@@ -63,40 +62,30 @@ function DocumentErrorMessage() {
 }
 
 function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePreviewProps) {
-	const isReady = containerWidth > 0;
-
 	return (
-		<div className="mt-1.5 mb-6">
-			{!isReady ? (
-				<PdfPreviewSkeleton pageCount={1} />
-			) : (
-				<Document file={file} error={DocumentErrorMessage}>
-					<Page
-						devicePixelRatio={2.5}
-						loading={
-							<div className="ui-flex-center w-full h-full bg-light rounded-lg">
-								<AnimateSpinner size={18} />
-							</div>
-						}
-						pageNumber={pageNumber}
-						width={containerWidth}
-						renderTextLayer={false}
-						renderAnnotationLayer={false}
-						rotate={rotatedAngle}
-						className="ui-flex-center w-full border border-gray-200"
-					/>
-				</Document>
-			)}
+		<div className="my-3">
+			<Document file={file} error={DocumentErrorMessage}>
+				<Page
+					devicePixelRatio={2.5}
+					loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={300} />}
+					pageNumber={pageNumber}
+					width={containerWidth}
+					renderTextLayer={false}
+					renderAnnotationLayer={false}
+					rotate={rotatedAngle}
+					className="ui-flex-center w-full border border-gray-200"
+				/>
+			</Document>
 		</div>
 	);
 }
 
 export default function PagePreviewContext({ page, isOpen, toggle }: PagePreviewContextProps) {
 	const { files } = useDropzoneFiles();
-	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
 	const { containerRef, containerWidth } = useResizableObserver<HTMLDivElement>({
-		initialWidth: typeof window !== 'undefined' && isSMDown ? 300 : window.innerWidth * 0.5,
+		initialWidth: typeof window !== 'undefined' ? (isXSDown ? 300 : window.innerWidth * 0.5) : 300,
 	});
 
 	const isReady = containerWidth > 0;
@@ -132,15 +121,15 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 	return (
 		<Dialog open={isOpen} onOpenChange={toggle}>
 			<DialogTrigger asChild>
-				<TriggerButton isSMDown={isSMDown} />
+				<TriggerButton isXSDown={isXSDown} />
 			</DialogTrigger>
 			<DialogContent className="max-w-[96dvw] min-w-[92dvw] max-h-[92dvh] w-auto h-auto overflow-x-hidden overflow-y-auto scrollbar-thin xl:min-w-[60dvw]">
 				<DialogHeader>
 					<DialogTitle className="text-left text-lg">{title}</DialogTitle>
 					<div className="flex justify-between items-center gap-2">
-						<DialogDescription className="min-w-0 flex-1 max-w-[60dvw] sm:max-w-none sm:w-fit inline-flex items-center gap-1.5 py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md truncate">
+						<DialogDescription className="max-w-[60dvw] sm:max-w-none sm:w-fit inline-flex items-center gap-1.5 py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md">
 							<Asterisk size={12} />
-							<span className="text-start">{description}</span>
+							<span className="truncate">{description}</span>
 						</DialogDescription>
 						<RotateButtonList modifyAngle={modifyAngle} />
 					</div>

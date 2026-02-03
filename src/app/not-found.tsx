@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { route } from '@/constant';
+import { route } from '@/constants';
 
 export default async function NotFound() {
 	return (
