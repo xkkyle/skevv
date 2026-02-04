@@ -57,14 +57,14 @@ function RotateButtonList({ modifyAngle }: { modifyAngle: (factor: 'right' | 'le
 	);
 }
 
-function DocumentErrorMessage() {
-	return <p className="py-3 px-6 w-full bg-red-100 text-red-400 rounded-full">Error happened to get a file</p>;
-}
-
 function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePreviewProps) {
 	return (
 		<div className="my-3">
-			<Document file={file} error={DocumentErrorMessage}>
+			<Document
+				file={file}
+				onLoadError={error => console.error('react-pdf onLoadError:', error)}
+				onSourceError={error => console.error('react-pdf onSourceError:', error)}
+				error={<PdfDocumentErrorMessage />}>
 				<Page
 					devicePixelRatio={2.5}
 					loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={300} />}

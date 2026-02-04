@@ -12,14 +12,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
 } from '@/components/ui';
 import { useDropzoneFiles, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';

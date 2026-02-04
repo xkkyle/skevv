@@ -11,10 +11,10 @@ interface SortableFileProps {
 	file: ProcessedFileItem;
 	filePage: { id: string; isOpen: boolean };
 	toggleFilePages: (fileId: string) => void;
-	deleteFile: () => void;
+	deleteFileWithUndo: (fileId: string) => void;
 }
 
-export default function SortableFile({ file, filePage, toggleFilePages, deleteFile }: SortableFileProps) {
+export default function SortableFile({ file, filePage, toggleFilePages, deleteFileWithUndo }: SortableFileProps) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: file.id,
 		animateLayoutChanges: () => false,
@@ -42,8 +42,9 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 					</div>
 					<span className="grow inline-block font-medium break-all whitespace-normal text-ellipsis">{file.file.name}</span>
 				</div>
-				<Button type="button" size="icon-sm" variant="ghost" onClick={deleteFile}>
+				<Button type="button" size="icon-sm" variant="ghost" onClick={() => deleteFileWithUndo(file.id)}>
 					<X />
+					<span className="sr-only">Delete file</span>
 				</Button>
 			</div>
 			<SortableFilePageList file={file} isOpen={filePage?.isOpen} />

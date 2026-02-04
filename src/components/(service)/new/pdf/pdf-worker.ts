@@ -25,6 +25,7 @@ interface MergeFileResult {
 	success: boolean;
 	message: string;
 	downloadUrl?: string;
+	fileSize: number;
 	fileName: string;
 }
 
@@ -187,6 +188,7 @@ const prepareMergedFile = async ({
 			success: true,
 			message: ASYNC_PDF_MESSAGE.MERGE.SUCCESS.MERGE_FILE,
 			downloadUrl,
+			fileSize: blobFile.size,
 			fileName: `${mergedFileName}.pdf`,
 		};
 	} catch (error) {
@@ -215,10 +217,8 @@ const downloadMergedFile = ({ downloadUrl, fileName }: { downloadUrl?: string; f
 	// 보안 속성 추가
 	a.rel = 'noopener noreferrer';
 
-	// DOM에 추가하지 않고 클릭 (더 깔끔)
 	a.click();
 
-	// 명시적으로 제거 (메모리 정리)
 	a.remove();
 };
 

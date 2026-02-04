@@ -4,6 +4,7 @@ import React from 'react';
 import { BetweenHorizonalEnd, ChevronRight, EllipsisVertical, FileText, Plus } from 'lucide-react';
 import { closestCenter, DndContext, DragEndEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { toast } from 'sonner';
 import { Button, MotionBlock, SortableFile, FileMergeAndDownloadContext, Input, AnimateSpinner, FileInsertSkeleton } from '@/components';
 import { useDropzoneFiles, useFileAccordions, useKeyboardTrigger, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
@@ -17,7 +18,6 @@ export default function FileListPanel() {
 	} = useDropzoneFiles();
 
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
-	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 
 	const fileInputId = React.useId();
 	const [isConfirmContextOpen, setIsConfirmContextOpen] = React.useState(false);
@@ -88,6 +88,31 @@ export default function FileListPanel() {
 		setFiles(arrayMove([...files], oldIndex, newIndex));
 	};
 
+	const deleteFileWithUndo = (fileId: string) => {
+		const removed = files.find(f => f.id === fileId);
+		const removedIndex = files.findIndex(f => f.id === fileId);
+
+		if (!removed) return;
+
+		setFiles(files.filter(prevFile => prevFile.id !== fileId));
+
+		toast('Removed file', {
+			description: removed.file.name,
+			action: {
+				label: 'Undo',
+				onClick: () => {
+					setFiles(files => {
+						const next = [...files];
+						next.splice(removedIndex, 0, removed);
+
+						return next;
+					});
+				},
+			},
+			duration: 4000,
+		});
+	};
+
 	return (
 		<div className="relative col-span-full p-3 border-muted md:col-span-2 md:border-r">
 			<div className="flex flex-col gap-2 max-h-screen h-full">
@@ -101,10 +126,10 @@ export default function FileListPanel() {
 						</h3>
 					</div>
 					<div className="ui-flex-center gap-2">
-						<Button type="button" variant="ghost" size={'icon-md'} onClick={open}>
+						<Button type="button" variant="ghost" size={'icon-sm'} onClick={open}>
 							<BetweenHorizonalEnd />
 						</Button>
-						<Button type="button" variant="ghost" size={'icon-md'}>
+						<Button type="button" variant="ghost" size={'icon-sm'}>
 							<EllipsisVertical />
 						</Button>
 					</div>
@@ -122,7 +147,7 @@ export default function FileListPanel() {
 									filePage={fileAccordions.find(fileAccordion => fileAccordion.id === file.id)!}
 									file={file}
 									toggleFilePages={toggle}
-									deleteFile={() => setFiles(files.filter(prevFile => prevFile.id !== file.id))}
+									deleteFileWithUndo={deleteFileWithUndo}
 								/>
 							))}
 
@@ -164,10 +189,10 @@ export default function FileListPanel() {
 			</div>
 			<div
 				className={cn(
-					isSMDown ? 'fixed' : 'absolute',
+					isXSDown ? 'fixed' : 'absolute',
 					'left-0 right-0 bottom-0',
 					'px-3 pt-3 w-full bg-light rounded-xl border-t border-muted sm:rounded-t-none sm:rounded-br-none',
-					isSMDown ? 'pb-[calc(env(safe-area-inset-bottom)+1.5rem)]' : 'pb-3',
+					isXSDown ? 'pb-[calc(env(safe-area-inset-bottom)+1.5rem)]' : 'pb-3',
 				)}>
 				{files.length !== 0 && <FileMergeAndDownloadContext files={files} isOpen={isConfirmContextOpen} toggle={setIsConfirmContextOpen} />}
 			</div>

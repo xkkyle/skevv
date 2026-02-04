@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
 	type ProcessedFileList,
 	type FileNameSchema,
-	type MergeFileResult,
 	fileNameSchema,
 	Button,
 	Form,
@@ -20,23 +19,25 @@ import {
 	Input,
 	ASYNC_PDF_MESSAGE,
 	prepareMergedFile,
-	getTotalPageCount,
 	downloadMergedFile,
-	cleanupDownloadUrl,
+	Badge,
 } from '@/components';
 import { useDropzoneFiles } from '@/hooks';
+import { useMergeFlowStore } from '@/store/useMergeFlowStore';
+import { smartFormatBytes } from '@/constants';
 
 interface FileNameSetterFormProps {
 	files: ProcessedFileList;
-	step: 'merge' | 'download';
-	setStep: React.Dispatch<React.SetStateAction<'merge' | 'download'>>;
-	onClose: () => void;
+	isOpen: boolean;
+	pageCount: number;
+	mergeFormId: string;
 	startTransition: <T>(promise: Promise<T>) => Promise<T>;
+	onClose: () => void;
 }
 
 const DEFAULT_FILE_NAME = 'new';
 
-export default function FileMergeAndDownload({ files, step, setStep, onClose, startTransition }: FileNameSetterFormProps) {
+export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFormId, startTransition, onClose }: FileNameSetterFormProps) {
 	const form = useForm<FileNameSchema>({
 		resolver: zodResolver(fileNameSchema),
 		defaultValues: {
@@ -44,31 +45,39 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose, st
 		},
 	});
 
+	const step = useMergeFlowStore(({ step }) => step);
+	const mergedResult = useMergeFlowStore(({ mergedResult }) => mergedResult);
+	const setStep = useMergeFlowStore(({ setStep }) => setStep);
+	const setMergedResult = useMergeFlowStore(({ setMergedResult }) => setMergedResult);
+	const reset = useMergeFlowStore(({ reset }) => reset);
+
+	const filesKey = React.useMemo(() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}`).join('|'), [files]);
+
 	const { onReset } = useDropzoneFiles();
 
-	const [mergeResult, setMergeResult] = React.useState<Pick<MergeFileResult, 'downloadUrl' | 'fileName'> | null>(null);
-	const totalPageCount = getTotalPageCount(files);
-
 	React.useEffect(() => {
-		return () => {
-			if (mergeResult?.downloadUrl) {
-				cleanupDownloadUrl(mergeResult.downloadUrl);
-				setStep('merge');
+		if (!isOpen) return;
+
+		if (step === 'download') {
+			const prevKey = mergedResult?.filesKey;
+			if (!prevKey || prevKey !== filesKey) {
+				reset();
 			}
-		};
-	}, [mergeResult, setStep]);
+		}
+	}, [isOpen, step, mergedResult?.filesKey, filesKey, reset]);
 
 	const onSubmit = async () => {
 		if (files?.length === 0) return;
 
 		try {
-			const mergedFileName = form.getValues('fileName');
-
-			const { success, message, downloadUrl, fileName } = await startTransition(prepareMergedFile({ files, mergedFileName }));
+			const { success, message, downloadUrl, fileName, fileSize } = await startTransition(
+				prepareMergedFile({ files, mergedFileName: form.getValues('fileName') }),
+			);
 
 			if (success && downloadUrl) {
-				setMergeResult({ downloadUrl, fileName });
+				setMergedResult({ fileName, downloadUrl, fileSize, filesKey });
 				setStep('download');
+
 				toast.success(message);
 			}
 		} catch (error) {
@@ -79,25 +88,26 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose, st
 	};
 
 	const handleDownload = () => {
-		if (mergeResult) {
-			downloadMergedFile(mergeResult);
+		if (mergedResult) {
+			downloadMergedFile(mergedResult);
 
 			onClose();
 			toast.success('Successfully downloaded');
 		}
 	};
 
-	const reset = () => {
+	const resetAll = () => {
 		onReset();
-		setMergeResult(null);
-		setStep('merge');
+
+		// step=merge, mergedResult=null
+		reset();
 	};
 
 	return (
-		<div className="flex flex-col gap-3 py-4">
+		<div className="flex flex-col gap-3">
 			{step === 'merge' && (
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)}>
+					<form id={mergeFormId} onSubmit={form.handleSubmit(onSubmit)}>
 						<FormField
 							control={form.control}
 							name="fileName"
@@ -111,25 +121,42 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose, st
 								</FormItem>
 							)}
 						/>
-						<ul className="flex justify-between items-center gap-2 my-3">
-							<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
-							<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
+						<ul className="flex items-center gap-2 my-3">
+							<li>
+								<Badge variant="secondary">{files.length} files</Badge>
+							</li>
+							<li>
+								<Badge variant="secondary">{pageCount} pages</Badge>
+							</li>
 						</ul>
 					</form>
 				</Form>
 			)}
 			{step === 'download' && (
-				<div className="flex flex-col gap-3 w-full mt-8">
-					<Button type="button" variant="default" onClick={handleDownload}>
-						<Download />
-						Download
-						<span className="inline-block truncate max-w-[200px] font-black">{mergeResult?.fileName}</span>
-					</Button>
-					<Button type="button" variant="outline" onClick={reset}>
-						<RotateCcw />
-						Reset
-					</Button>
-				</div>
+				<>
+					<div className="flex flex-col gap-2 py-3">
+						<span className="text-sm font-medium">Details</span>
+						<ul className="flex items-center gap-2">
+							<li>
+								<Badge variant="secondary">{pageCount} pages</Badge>
+							</li>
+							<li>
+								<Badge variant="secondary">{smartFormatBytes(mergedResult?.fileSize ?? 0)}</Badge>
+							</li>
+						</ul>
+					</div>
+					<div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end border-t border-muted pt-3">
+						<Button type="button" variant="outline" onClick={resetAll}>
+							<RotateCcw />
+							Reset
+						</Button>
+						<Button type="button" variant="default" onClick={handleDownload}>
+							<Download />
+							Download
+							<span className="inline-block truncate max-w-[200px] font-black">{mergedResult?.fileName}</span>
+						</Button>
+					</div>
+				</>
 			)}
 		</div>
 	);

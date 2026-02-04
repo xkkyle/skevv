@@ -6,10 +6,9 @@ import React from 'react';
 import { pdfjs, Document } from 'react-pdf';
 import { FileWithPath } from 'react-dropzone';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { type PageItem, PdfPreviewSkeleton } from '@/components';
+import { type PageItem, PdfDocumentErrorMessage, PdfPreviewSkeleton } from '@/components';
 import { SCROLL_BAR_WIDTH, useDebouncedEffect } from '@/hooks';
 import { PDF_DEFAULT_HEIGHT } from '@/constants';
-import { useFileTargetStore } from '@/store';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -27,10 +26,6 @@ interface PdfPreviewProps {
 	pages: PageItem[];
 	startPageNumber?: number;
 	containerWidth: number;
-}
-
-function DocumentErrorMessage() {
-	return <p className="py-3 px-6 w-full bg-red-100 text-red-400 rounded-full">Error happened to get a file</p>;
 }
 
 export default function PdfPreview({ scrollParentRef, file, pages, startPageNumber = 1, containerWidth }: PdfPreviewProps) {
@@ -68,7 +63,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		},
 		effectTriggers: [containerWidth],
 	});
-
+	console.log(file);
 	const calculateHeights = async (pdf: PDFDocumentProxy, containerWidth: number) => {
 		const heights: number[] = [];
 		const PADDING = 12;
@@ -133,38 +128,44 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	// 2. after page's loading, execute other logic
 	return (
 		<div style={{ width: containerWidth + SCROLL_BAR_WIDTH }}>
-			<Document
-				file={file}
-				loading={<PdfPreviewSkeleton pageCount={pages.length} estimateHeight={getEstimateHeightSize(1)} />}
-				onLoadSuccess={handleDocumentLoadSuccess}
-				error={DocumentErrorMessage}
-				className="relative">
-				<div className="scrollbar-thin" style={{ position: 'relative', width: containerWidth, height: rowVirtualizer?.getTotalSize() }}>
-					{rowVirtualizer?.getVirtualItems().map(virtualRow => {
-						const index = virtualRow.index;
-						const page = sortedPages[index];
-						const pageNumber = +page.id.split('-page-')[1];
+			{file ? (
+				<Document
+					file={file}
+					loading={<PdfPreviewSkeleton pageCount={pages.length} estimateHeight={getEstimateHeightSize(1)} />}
+					onLoadSuccess={handleDocumentLoadSuccess}
+					onLoadError={error => console.error('react-pdf onLoadError:', error)}
+					onSourceError={error => console.error('react-pdf onSourceError:', error)}
+					error={<PdfDocumentErrorMessage />}
+					className="relative">
+					<div className="scrollbar-thin" style={{ position: 'relative', width: containerWidth, height: rowVirtualizer?.getTotalSize() }}>
+						{rowVirtualizer?.getVirtualItems().map(virtualRow => {
+							const index = virtualRow.index;
+							const page = sortedPages[index];
+							const pageNumber = +page.id.split('-page-')[1];
 
-						return (
-							<VirtualPage
-								key={page.id}
-								style={{
-									position: 'absolute',
-									top: 0,
-									left: 0,
-									width: containerWidth,
-									height: `${virtualRow.size}px`,
-									transform: `translateY(${virtualRow.start}px)`,
-								}}
-								page={page}
-								pageNumber={pageNumber}
-								startPageNumber={startPageNumber}
-								containerWidth={containerWidth}
-							/>
-						);
-					})}
-				</div>
-			</Document>
+							return (
+								<VirtualPage
+									key={page.id}
+									style={{
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										width: containerWidth,
+										height: `${virtualRow.size}px`,
+										transform: `translateY(${virtualRow.start}px)`,
+									}}
+									page={page}
+									pageNumber={pageNumber}
+									startPageNumber={startPageNumber}
+									containerWidth={containerWidth}
+								/>
+							);
+						})}
+					</div>
+				</Document>
+			) : (
+				<PdfDocumentErrorMessage />
+			)}
 		</div>
 	);
 }

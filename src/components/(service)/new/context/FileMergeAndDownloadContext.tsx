@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ArrowBigUp } from 'lucide-react';
 import {
 	Button,
 	Dialog,
@@ -12,14 +11,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
 	FileMergeAndDownload,
 	FileMergeButton,
 	Kbd,
@@ -27,6 +18,7 @@ import {
 import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useLoading, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
+import { useMergeFlowStore } from '@/store/useMergeFlowStore';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;
@@ -34,85 +26,70 @@ interface FileMergeAndDownloadContextProps {
 	toggle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function TriggerButton({ pageCount, isSMDown, ...props }: { pageCount: number; isSMDown: boolean }) {
+function TriggerButton({ pageCount, isSMDown, disabled, ...props }: { pageCount: number; isSMDown: boolean; disabled: boolean }) {
 	return (
-		<Button type="button" size="lg" className={`flex justify-center items-center gap-4 w-full px-${isSMDown ? 'auto' : '4'}`} {...props}>
-			<div className="flex items-center gap-2 truncate ">Merge {pageCount} Pages</div>
-			{!isSMDown && (
-				<Kbd className="text-xs">
-					<ArrowBigUp size={8} /> + M
-				</Kbd>
-			)}
+		<Button
+			type="button"
+			size="lg"
+			className={`flex justify-center items-center gap-4 w-full px-${isSMDown ? 'auto' : '4'}`}
+			disabled={disabled}
+			{...props}>
+			<div className="flex items-center gap-2 truncate">Merge {pageCount} Pages</div>
+			{!isSMDown && <Kbd className="text-xs">Shift + M</Kbd>}
 		</Button>
 	);
 }
 
 export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: FileMergeAndDownloadContextProps) {
-	const [step, setStep] = React.useState<'merge' | 'download'>('merge');
+	const currentStep = useMergeFlowStore(({ step }) => step);
+	const mergeFormId = React.useId();
 
 	const { Loading, isLoading, startTransition } = useLoading();
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+
 	const pageCount = getTotalPageCount(files);
 
-	const title = step === 'merge' ? 'Merge Files' : 'Download merged file';
-	const description =
-		step === 'merge'
-			? `Check infos here. ${isSMDown ? 'Press' : 'Click'} merge when you're done.`
-			: `Your ${pageCount} pages of PDF is ready to download`;
+	const isOneFile = files.length < 2;
 
-	const onClose = () => toggle(false);
+	const title = currentStep === 'merge' ? 'Merge Files' : 'Download merged file';
+	const description =
+		currentStep === 'merge'
+			? `⚡️ Type file name first.  ${isSMDown ? 'Press' : 'Click'} merge when you're done, then.`
+			: `✅ Your PDF is ready to download`;
+
+	const onClose = () => {
+		toggle(false);
+	};
 
 	return (
-		<>
-			{isSMDown ? (
-				<Drawer open={isOpen} onOpenChange={toggle}>
-					<DrawerTrigger asChild>
-						<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
-					</DrawerTrigger>
-					<DrawerContent>
-						<DrawerHeader className="gap-2 p-3 text-left">
-							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
-							<DrawerDescription className="flex items-center gap-2 w-fit text-sm text-gray-500 text-start font-medium">
-								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
-								{description}
-							</DrawerDescription>
-						</DrawerHeader>
-						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} startTransition={startTransition} />
-						<DrawerFooter>
-							<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
-							<DrawerClose asChild>
-								<Button type="button" variant="outline">
-									Cancel
-								</Button>
-							</DrawerClose>
-						</DrawerFooter>
-					</DrawerContent>
-				</Drawer>
-			) : (
-				<Dialog open={isOpen} onOpenChange={toggle}>
-					<DialogTrigger asChild>
-						<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
-					</DialogTrigger>
-					<DialogContent className="max-w-[500px]">
-						<DialogHeader>
-							<DialogTitle className="text-xl">{title}</DialogTitle>
-							<DialogDescription className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-								{step === 'merge' ? <span>⚡️</span> : <span>✅</span>}
-								{description}
-							</DialogDescription>
-						</DialogHeader>
-						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} startTransition={startTransition} />
-						<DialogFooter>
-							<DialogClose asChild>
-								<Button type="button" variant="outline">
-									Cancel
-								</Button>
-							</DialogClose>
-							<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
-			)}
-		</>
+		<Dialog open={isOpen} onOpenChange={toggle}>
+			<DialogTrigger asChild>
+				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} disabled={isOneFile} />
+			</DialogTrigger>
+			<DialogContent className="w-[90dvw] max-w-[500px]">
+				<DialogHeader>
+					<DialogTitle className="text-xl">{title}</DialogTitle>
+					<DialogDescription className="text-start text-sm text-gray-500 font-medium">{description}</DialogDescription>
+				</DialogHeader>
+				<FileMergeAndDownload
+					files={files}
+					pageCount={pageCount}
+					mergeFormId={mergeFormId}
+					isOpen={isOpen}
+					startTransition={startTransition}
+					onClose={onClose}
+				/>
+				{currentStep === 'merge' && (
+					<DialogFooter className="pt-3 border-t border-muted">
+						<DialogClose asChild>
+							<Button type="button" variant="outline">
+								Cancel
+							</Button>
+						</DialogClose>
+						<FileMergeButton isLoading={isLoading} Loading={<Loading />} mergeFormId={mergeFormId} disabled={currentStep !== 'merge'} />
+					</DialogFooter>
+				)}
+			</DialogContent>
+		</Dialog>
 	);
 }
