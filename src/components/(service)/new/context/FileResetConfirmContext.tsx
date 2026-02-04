@@ -48,53 +48,27 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 	const close = () => toggle(false);
 
 	return (
-		<>
-			{isMobile ? (
-				<Drawer open={isOpen} onOpenChange={toggle}>
-					<DrawerTrigger asChild>
-						<TriggerButton open={open} />
-					</DrawerTrigger>
-					<DrawerContent>
-						<DrawerHeader className="p-3 text-left">
-							<DrawerTitle className="text-start text-lg">{title}</DrawerTitle>
-							<DrawerDescription className="text-start">{description}</DrawerDescription>
-						</DrawerHeader>
-						<DrawerFooter className="p-3 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-							<Button type="button" size="lg" onClick={onReset} className="col-span-1">
-								Confirm
-							</Button>
-							<DrawerClose asChild>
-								<Button type="button" variant="outline" size="lg" onClick={close} className="col-span-1">
-									Cancel
-								</Button>
-							</DrawerClose>
-						</DrawerFooter>
-					</DrawerContent>
-				</Drawer>
-			) : (
-				<Dialog open={isOpen} onOpenChange={toggle}>
-					<DialogTrigger asChild>
-						<TriggerButton open={open} />
-					</DialogTrigger>
-					<DialogContent className="w-[500px]" aria-describedby="File Reset Confirm Dialog Content">
-						<DialogHeader>
-							<DialogTitle className="text-lg">{title}</DialogTitle>
-							<DialogDescription className="text-start">{description}</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<DialogClose asChild>
-								<Button type="button" variant="outline" size="lg" onClick={close}>
-									Cancel
-								</Button>
-							</DialogClose>
+		<Dialog open={isOpen} onOpenChange={toggle}>
+			<DialogTrigger asChild>
+				<TriggerButton open={open} />
+			</DialogTrigger>
+			<DialogContent className="w-[500px]" aria-describedby="File Reset Confirm Dialog Content">
+				<DialogHeader>
+					<DialogTitle className="text-xl">{title}</DialogTitle>
+					<DialogDescription>{description}</DialogDescription>
+				</DialogHeader>
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button type="button" variant="outline" onClick={close}>
+							Cancel
+						</Button>
+					</DialogClose>
 
-							<Button type="button" size="lg" onClick={onReset}>
-								Confirm
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
-			)}
-		</>
+					<Button type="button" onClick={onReset}>
+						Confirm
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

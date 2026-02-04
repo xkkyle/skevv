@@ -90,7 +90,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
 				<div className="flex flex-col">
 					<UserProfile />
 				</div>
-				<small className="inline-flex items-center gap-0.5 text-default mx-3 mb-2 mt-1 text-[0.5rem] opacity-50 lg:block group-data-[state=collapsed]:hidden">
+				<small className="inline-flex items-center gap-1 text-default mx-3 mb-2 mt-1 text-[0.5rem] opacity-50 lg:block group-data-[state=collapsed]:hidden">
 					<span>© 2026</span>
 					<Link href={route.SERVICE.ROOT} className="hover:underline" target="_blank">
 						Skevv

@@ -9,13 +9,8 @@ import {
 	type ProcessedFileList,
 	type FileNameSchema,
 	type MergeFileResult,
-	FileMergeButton,
 	fileNameSchema,
 	Button,
-	DialogClose,
-	DialogFooter,
-	DrawerClose,
-	DrawerFooter,
 	Form,
 	FormControl,
 	FormField,
@@ -29,19 +24,19 @@ import {
 	downloadMergedFile,
 	cleanupDownloadUrl,
 } from '@/components';
-import { useDropzoneFiles, useLoading, useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constants';
+import { useDropzoneFiles } from '@/hooks';
 
 interface FileNameSetterFormProps {
 	files: ProcessedFileList;
 	step: 'merge' | 'download';
 	setStep: React.Dispatch<React.SetStateAction<'merge' | 'download'>>;
 	onClose: () => void;
+	startTransition: <T>(promise: Promise<T>) => Promise<T>;
 }
 
 const DEFAULT_FILE_NAME = 'new';
 
-export default function FileMergeAndDownload({ files, step, setStep, onClose }: FileNameSetterFormProps) {
+export default function FileMergeAndDownload({ files, step, setStep, onClose, startTransition }: FileNameSetterFormProps) {
 	const form = useForm<FileNameSchema>({
 		resolver: zodResolver(fileNameSchema),
 		defaultValues: {
@@ -50,8 +45,6 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 	});
 
 	const { onReset } = useDropzoneFiles();
-	const { Loading, isLoading, startTransition } = useLoading();
-	const isMobile = useMediaQuery(screenSize.MAX_SM);
 
 	const [mergeResult, setMergeResult] = React.useState<Pick<MergeFileResult, 'downloadUrl' | 'fileName'> | null>(null);
 	const totalPageCount = getTotalPageCount(files);
@@ -101,59 +94,38 @@ export default function FileMergeAndDownload({ files, step, setStep, onClose }: 
 	};
 
 	return (
-		<div className={`flex flex-col gap-3 p-3 mb-3 sm:p-0 sm:mb-0`}>
+		<div className="flex flex-col gap-3 py-4">
 			{step === 'merge' && (
-				<>
-					<Form {...form}>
-						<form className="mt-3" onSubmit={form.handleSubmit(onSubmit)}>
-							<FormField
-								control={form.control}
-								name="fileName"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="font-medium text-sm"> Merged File Name</FormLabel>
-										<FormControl>
-											<Input type="text" placeholder="Set your merged filename" {...field} />
-										</FormControl>
-										<FormMessage className="text-xs" />
-									</FormItem>
-								)}
-							/>
-							<ul className="flex justify-between items-center gap-2 my-3">
-								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
-								<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
-							</ul>
-							{isMobile ? (
-								<DrawerFooter className="my-3 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
-									<DrawerClose asChild>
-										<Button type="button" variant="outline" size="lg">
-											Cancel
-										</Button>
-									</DrawerClose>
-								</DrawerFooter>
-							) : (
-								<DialogFooter className="mt-6">
-									<DialogClose asChild>
-										<Button type="button" variant="outline" size="lg">
-											Cancel
-										</Button>
-									</DialogClose>
-									<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
-								</DialogFooter>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<FormField
+							control={form.control}
+							name="fileName"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel className="font-medium text-sm">File Name</FormLabel>
+									<FormControl>
+										<Input type="text" placeholder="Set your merged filename" {...field} />
+									</FormControl>
+									<FormMessage className="text-xs" />
+								</FormItem>
 							)}
-						</form>
-					</Form>
-				</>
+						/>
+						<ul className="flex justify-between items-center gap-2 my-3">
+							<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{files.length} files</li>
+							<li className="w-full p-3 text-center bg-gray-100 font-medium rounded-lg">{totalPageCount} pages</li>
+						</ul>
+					</form>
+				</Form>
 			)}
 			{step === 'download' && (
 				<div className="flex flex-col gap-3 w-full mt-8">
-					<Button type="button" variant="default" size="lg" onClick={handleDownload}>
+					<Button type="button" variant="default" onClick={handleDownload}>
 						<Download />
 						Download
 						<span className="inline-block truncate max-w-[200px] font-black">{mergeResult?.fileName}</span>
 					</Button>
-					<Button type="button" variant="outline" size="lg" onClick={reset}>
+					<Button type="button" variant="outline" onClick={reset}>
 						<RotateCcw />
 						Reset
 					</Button>

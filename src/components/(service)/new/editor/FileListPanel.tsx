@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React from 'react';
 import { BetweenHorizonalEnd, ChevronRight, EllipsisVertical, FileText, Plus } from 'lucide-react';
 import { closestCenter, DndContext, DragEndEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -43,11 +43,12 @@ export default function FileListPanel() {
 		}),
 	);
 
+	const sensorType = isXSDown ? 'mobile' : 'desktop';
 	const sensors = isXSDown ? mobileSensors : desktopSensors;
 
 	useKeyboardTrigger({
 		handler: (e: KeyboardEvent) => {
-			if (e.ctrlKey && e.key.toLowerCase() === 'm') {
+			if (e.shiftKey && e.key.toLowerCase() === 'm') {
 				e.preventDefault();
 				setIsConfirmContextOpen(true);
 			}
@@ -109,7 +110,7 @@ export default function FileListPanel() {
 					</div>
 				</div>
 
-				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+				<DndContext key={sensorType} sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 					<SortableContext items={files.map(({ id }) => id)} strategy={verticalListSortingStrategy}>
 						<div
 							className="flex flex-col flex-1 shrink-0 items-center gap-1 pb-2 w-full h-full overflow-y-scroll scrollbar-thin touch-pan-y md:min-h-0 sm:pb-16"

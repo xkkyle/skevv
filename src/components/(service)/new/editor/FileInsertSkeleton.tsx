@@ -1,5 +1,7 @@
+import { Skeleton } from '@/components';
+
 function Element() {
-	return <div className="mb-2 min-h-[50px] w-[calc(100%-8px)] rounded-lg bg-light" />;
+	return <Skeleton className="mb-2 min-h-[50px] w-[calc(100%-8px)] rounded-lg bg-light" />;
 }
 
 export default function FileInsertSkeleton({ filesLength = 1 }: { filesLength: number }) {

@@ -78,8 +78,8 @@ export default function UserProfile({ inSideNav = false }: UserProfileProps) {
 				</DropdownMenu>
 			) : (
 				<MotionBlock className="ui-flex-center w-full">
-					<Button asChild variant="outline" size="default" className="w-full">
-						<Link href={route.AUTH.LOGIN} className="">
+					<Button variant="outline" className="w-full" asChild>
+						<Link href={route.AUTH.LOGIN}>
 							<LogIn size={18} />
 							<span className="group-data-[state=collapsed]:hidden">Get started</span>
 						</Link>

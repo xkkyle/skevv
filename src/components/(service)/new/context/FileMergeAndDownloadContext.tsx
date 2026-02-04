@@ -1,26 +1,31 @@
 'use client';
 
 import React from 'react';
-import { FilePlus } from 'lucide-react';
+import { ArrowBigUp } from 'lucide-react';
 import {
 	Button,
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
+	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 	Drawer,
+	DrawerClose,
 	DrawerContent,
 	DrawerDescription,
+	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
 	FileMergeAndDownload,
+	FileMergeButton,
 	Kbd,
 } from '@/components';
 import { type ProcessedFileList, getTotalPageCount } from '../pdf';
-import { useMediaQuery } from '@/hooks';
+import { useLoading, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
 
 interface FileMergeAndDownloadContextProps {
@@ -32,11 +37,12 @@ interface FileMergeAndDownloadContextProps {
 function TriggerButton({ pageCount, isSMDown, ...props }: { pageCount: number; isSMDown: boolean }) {
 	return (
 		<Button type="button" size="lg" className={`flex justify-center items-center gap-4 w-full px-${isSMDown ? 'auto' : '4'}`} {...props}>
-			<div className="flex items-center gap-2 overflow-hidden text-ellipsis ">
-				<FilePlus size={18} />
-				Merge {pageCount} Pages
-			</div>
-			{!isSMDown && <Kbd className="text-xs">Ctrl + M</Kbd>}
+			<div className="flex items-center gap-2 truncate ">Merge {pageCount} Pages</div>
+			{!isSMDown && (
+				<Kbd className="text-xs">
+					<ArrowBigUp size={8} /> + M
+				</Kbd>
+			)}
 		</Button>
 	);
 }
@@ -44,6 +50,7 @@ function TriggerButton({ pageCount, isSMDown, ...props }: { pageCount: number; i
 export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: FileMergeAndDownloadContextProps) {
 	const [step, setStep] = React.useState<'merge' | 'download'>('merge');
 
+	const { Loading, isLoading, startTransition } = useLoading();
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 	const pageCount = getTotalPageCount(files);
 
@@ -70,7 +77,15 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								{description}
 							</DrawerDescription>
 						</DrawerHeader>
-						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} />
+						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} startTransition={startTransition} />
+						<DrawerFooter>
+							<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
+							<DrawerClose asChild>
+								<Button type="button" variant="outline">
+									Cancel
+								</Button>
+							</DrawerClose>
+						</DrawerFooter>
 					</DrawerContent>
 				</Drawer>
 			) : (
@@ -86,7 +101,15 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								{description}
 							</DialogDescription>
 						</DialogHeader>
-						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} />
+						<FileMergeAndDownload files={files} step={step} setStep={setStep} onClose={onClose} startTransition={startTransition} />
+						<DialogFooter>
+							<DialogClose asChild>
+								<Button type="button" variant="outline">
+									Cancel
+								</Button>
+							</DialogClose>
+							<FileMergeButton isLoading={isLoading} Loading={<Loading />} />
+						</DialogFooter>
 					</DialogContent>
 				</Dialog>
 			)}
