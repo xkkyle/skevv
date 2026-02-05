@@ -2,10 +2,19 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
-import { GripVertical } from 'lucide-react';
+import { EllipsisVertical, GripVertical, Trash } from 'lucide-react';
+import { toast } from 'sonner';
 import { useSortable } from '@dnd-kit/sortable';
-import { Button } from '@/components';
-import { type PageItem } from '../pdf';
+import {
+	Button,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	type PageItem,
+	deletePageFromFiles,
+} from '@/components';
+import { useDropzoneFiles } from '@/hooks';
 import { getTransformStyleOnSortableContext } from '@/utils/dndSortable';
 
 interface SortableFilePageProps {
@@ -19,8 +28,46 @@ export default function SortableFilePage({ page }: SortableFilePageProps) {
 		id: page.id,
 		animateLayoutChanges: () => false,
 	});
+	const { files, setFiles } = useDropzoneFiles();
 
 	const [isPagePreviewContextOpen, setIsPagePreviewContextOpen] = React.useState(false);
+
+	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
+		const fileId = pageId.split('-page-')[0];
+		const file = files.find(file => file.id === fileId);
+
+		const removed = file?.pages.find(page => page.id === pageId);
+		if (!file || !removed) return;
+
+		const removedIndex = [...file.pages].sort((prev, curr) => prev.order - curr.order).findIndex(page => page.id === pageId); // Current Display Order index -> to undo on Toast
+
+		// 1) Remove
+		setFiles(files => deletePageFromFiles(files, pageId));
+
+		// 2) Undo
+		toast('Removed page', {
+			description: `Page ${removed.order}`,
+			action: {
+				label: 'Undo',
+				onClick: () => {
+					setFiles(prev =>
+						prev.map(file => {
+							if (file.id !== fileId) return file;
+
+							// Revert : insert original page(removed) into current pages(next) and reorder
+							const next = [...file.pages];
+							next.splice(Math.max(0, removedIndex), 0, removed);
+
+							const normalized = next.sort((prev, curr) => prev.order - curr.order).map((p, idx) => ({ ...p, order: idx + 1 }));
+
+							return { ...file, pages: normalized, pageCount: normalized.length };
+						}),
+					);
+				},
+			},
+			duration: 4000,
+		});
+	};
 
 	return (
 		<div
@@ -43,7 +90,29 @@ export default function SortableFilePage({ page }: SortableFilePageProps) {
 				</Button>
 				<span>Page {page.order}</span>
 			</div>
-			<PagePreviewContext page={page} isOpen={isPagePreviewContextOpen} toggle={setIsPagePreviewContextOpen} />
+			<div className="flex items-center gap-1">
+				<PagePreviewContext page={page} isOpen={isPagePreviewContextOpen} toggle={setIsPagePreviewContextOpen} />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild aria-label="Open Detail Menu">
+						<Button type="button" variant="ghost" size="icon-sm">
+							<EllipsisVertical />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem className="cursor-pointer">
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								className="text-red-500 hover:text-red-500"
+								onClick={() => deletePageWithUndo({ pageId: page.id })}>
+								<Trash className="text-red-500" />
+								Delete
+							</Button>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 		</div>
 	);
 }

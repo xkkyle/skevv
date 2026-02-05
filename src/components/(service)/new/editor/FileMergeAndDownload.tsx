@@ -46,6 +46,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 	});
 
 	const { merge } = usePdfWorker();
+	const { onReset } = useDropzoneFiles();
 
 	const step = useMergeFlowStore(({ step }) => step);
 	const mergedResult = useMergeFlowStore(({ mergedResult }) => mergedResult);
@@ -54,8 +55,6 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 	const reset = useMergeFlowStore(({ reset }) => reset);
 
 	const filesKey = React.useMemo(() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}`).join('|'), [files]);
-
-	const { onReset } = useDropzoneFiles();
 
 	React.useEffect(() => {
 		if (!isOpen) return;

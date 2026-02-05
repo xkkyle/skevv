@@ -46,7 +46,7 @@ export default function FileDropZone() {
 				type="button"
 				variant="secondary"
 				onClick={open}
-				className="absolute bottom-8 left-[50%] -translate-x-[50%] bg-gradient-blue-200 border-gray-200 text-white z-5">
+				className="absolute bottom-9 left-[50%] -translate-x-[50%] bg-gradient-blue-200 border-gray-200 text-white z-5">
 				<CirclePlus strokeWidth={2.5} /> Select your files
 			</Button>
 		</div>

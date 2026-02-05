@@ -27,7 +27,7 @@ export default function useDropzoneFiles() {
 
 		const willUpdateFiles: RawFileItem[] = acceptedFiles
 			.map(file => ({
-				id: `${file.name}-${Date.now()}`,
+				id: `${file.name}-${crypto.randomUUID()}`,
 				file,
 			}))
 			.sort((prev, curr) => prev.file.name.localeCompare(curr.file.name, undefined, { numeric: true, sensitivity: 'base' }));

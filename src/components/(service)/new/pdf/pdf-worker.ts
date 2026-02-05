@@ -87,6 +87,26 @@ const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise
 	}
 };
 
+const deletePageFromFiles = (files: ProcessedFileList, pageId: PageItem['id']): ProcessedFileList => {
+	// pageId: `${fileId}-page-${fileIndex}`
+	const fileId = pageId.split('-page-')[0];
+
+	return files.map(file => {
+		if (file.id !== fileId) return file;
+
+		const nextPages = file.pages
+			.filter(page => page.id !== pageId)
+			.sort((prev, curr) => prev.order - curr.order)
+			.map((page, idx) => ({ ...page, order: idx + 1 }));
+
+		return {
+			...file,
+			pages: nextPages,
+			pageCount: nextPages.length,
+		};
+	});
+};
+
 const createMergedFileBlob = async ({ processedFiles, merge }: { processedFiles: ProcessedFileList; merge: Merge }) => {
 	try {
 		const buffers: ArrayBuffer[] = [];
@@ -161,6 +181,7 @@ export type { PageItem, RawFileItem, ProcessedFileItem, RawFileList, ProcessedFi
 export {
 	ASYNC_PDF_MESSAGE,
 	getTotalPageCount,
+	deletePageFromFiles,
 	getProcessedFileListWithCountedPages,
 	createMergedFileBlob,
 	prepareMergedFile,

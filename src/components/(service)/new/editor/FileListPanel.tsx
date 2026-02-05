@@ -142,13 +142,16 @@ export default function FileListPanel() {
 							style={{ WebkitOverflowScrolling: 'touch' }}
 							{...rootProps}>
 							{files?.map(file => (
-								<SortableFile
-									key={file.id}
-									filePage={fileAccordions.find(fileAccordion => fileAccordion.id === file.id)!}
-									file={file}
-									toggleFilePages={toggle}
-									deleteFileWithUndo={deleteFileWithUndo}
-								/>
+								<React.Fragment key={file.id}>
+									{file.pages.length ? (
+										<SortableFile
+											filePage={fileAccordions.find(fileAccordion => fileAccordion.id === file.id)!}
+											file={file}
+											toggleFilePages={toggle}
+											deleteFileWithUndo={deleteFileWithUndo}
+										/>
+									) : null}
+								</React.Fragment>
 							))}
 
 							{isDragActive && isDragAccept && <FileInsertSkeleton filesLength={currentDragFilesCount} />}
@@ -162,7 +165,11 @@ export default function FileListPanel() {
 									id={`file-dropzone-${fileInputId}`}
 									data-input-id={`file-dropzone-inner`}
 									className="hidden"
-									{...getInputProps()}
+									{...getInputProps({
+										onClick: e => {
+											(e.target as HTMLInputElement).value = '';
+										},
+									})}
 								/>
 								<label
 									htmlFor={`file-dropzone-${fileInputId}`}
