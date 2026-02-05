@@ -7,11 +7,7 @@ type MergedResult = { fileName: string; downloadUrl: string; fileSize: number; f
 
 interface MergeFlowStore {
 	step: MergeStep;
-
-	// merge result
 	mergedResult: MergedResult;
-
-	// actions
 	setStep: (step: MergeStep) => void;
 	setMergedResult: (mergedResult: MergedResult) => void;
 	reset: () => void;

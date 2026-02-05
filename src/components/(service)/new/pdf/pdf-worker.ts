@@ -1,6 +1,7 @@
-import { PDFDocument } from 'pdf-lib';
 import { FileWithPath } from 'react-dropzone';
-import { pipe, chunk, toArray } from '@fxts/core';
+import { PDFDocument } from 'pdf-lib';
+import { toArray, chunk, pipe } from '@fxts/core';
+import { Merge } from '@/hooks';
 import { PDF_HQ } from '@/constants';
 
 interface PageItem {
@@ -29,7 +30,6 @@ interface MergeFileResult {
 	fileName: string;
 }
 
-// TODO: multi-language options
 const ASYNC_PDF_MESSAGE = {
 	LOAD: {
 		ERROR: 'Error happen during loading files',
@@ -54,15 +54,15 @@ const getTotalPageCount = (files: ProcessedFileList) => {
 	return files.reduce((sum, file) => sum + (file?.pageCount ?? 0), 0);
 };
 
-const getCountedPages = async (files: RawFileList): Promise<ProcessedFileList> => {
+const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise<ProcessedFileList> => {
 	const pageCounts: number[] = [];
 	const batchFiles = pipe(files, chunk(3), toArray);
 
 	try {
 		for (const batchFile of batchFiles) {
 			const counts = await Promise.all(
-				batchFile.map(async file => {
-					const arrayBuffer = await file.file.arrayBuffer();
+				batchFile.map(async rawFile => {
+					const arrayBuffer = await rawFile.file.arrayBuffer();
 					const batchedPdf = await PDFDocument.load(arrayBuffer);
 
 					return batchedPdf.getPageCount();
@@ -87,101 +87,38 @@ const getCountedPages = async (files: RawFileList): Promise<ProcessedFileList> =
 	}
 };
 
-const saveFileOnLocal = async ({ mergedFileName, newBlob }: { mergedFileName: string; newBlob: Blob }) => {
-	if ('showSaveFilePicker' in window) {
-		try {
-			const fileHandle = await window.showSaveFilePicker?.({
-				suggestedName: `${mergedFileName}.pdf`,
-				types: [
-					{
-						description: 'PDF files',
-						accept: { [PDF_HQ.KEY]: PDF_HQ.VALUE },
-					},
-				],
-			});
-
-			const writable = await fileHandle?.createWritable();
-			await writable?.write(newBlob);
-			await writable?.close();
-
-			return { success: true, message: ASYNC_PDF_MESSAGE.MERGE.SUCCESS.MERGE_FILE };
-		} catch (error) {
-			if (error instanceof DOMException && error.name === 'AbortError') {
-				throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.CANCEL_FILE_SAVE, { cause: error });
-			}
-			throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE, { cause: error });
-		}
-	} else {
-		// fallback download
-		const url = URL.createObjectURL(newBlob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = `${mergedFileName}.pdf`;
-		a.click();
-		URL.revokeObjectURL(url);
-
-		return { success: true, message: ASYNC_PDF_MESSAGE.MERGE.SUCCESS.MERGE_FILE };
-	}
-};
-
-// ⚡️ Double try - catch
-// 1. inner : local specific error
-// 2. outer : get inner catch throw [ new Error(message) ] -> unify error message on outer catch
-const createMergedFileBlob = async ({ files }: { files: ProcessedFileList }) => {
+const createMergedFileBlob = async ({ processedFiles, merge }: { processedFiles: ProcessedFileList; merge: Merge }) => {
 	try {
-		const createdPdf = await PDFDocument.create();
+		const buffers: ArrayBuffer[] = [];
 
-		const batchFiles = pipe(files, chunk(3), toArray);
+		const batchFiles = pipe(processedFiles, chunk(2), toArray);
 
 		for (const batchFile of batchFiles) {
-			const loadedPdfs = await Promise.all(
-				batchFile.map(async file => {
-					const arrayBuffer = await file.file.arrayBuffer();
-					const batchedPdf = await PDFDocument.load(arrayBuffer);
+			const batchBuffers = await Promise.all(batchFile.map(processedFile => processedFile.file.arrayBuffer()));
 
-					return { file, pdf: batchedPdf };
-				}),
-			);
-
-			for (const { file, pdf } of loadedPdfs) {
-				// order : just show order of each page
-				// id : fileName-page-realPageNumber
-				// copyPages function need pageIndices which show the actual number of page
-				const pageIndices = [...file.pages]
-					.sort((prev, curr) => prev.order - curr.order)
-					.map(page => {
-						const originalIndex = +page.id.split('-page-')[1] - 1;
-						return originalIndex;
-					}); // PDF-lib use 0-based index
-
-				const virtualPages = await createdPdf.copyPages(pdf, pageIndices);
-				virtualPages.forEach(page => createdPdf.addPage(page));
-			}
+			buffers.push(...batchBuffers);
 		}
 
-		const mergedBytes = await createdPdf.save();
-		// as BlotPart doesn't make problem, because UIntArray can be used as BlobPart
-		const newBlob = new Blob([mergedBytes as BlobPart], { type: PDF_HQ.KEY });
+		const mergedBytesBuffer = await merge({ buffers, pagesByFile: processedFiles.map(({ pages }) => pages) });
 
-		return newBlob;
+		return new Blob([mergedBytesBuffer], { type: PDF_HQ.KEY });
 	} catch (error) {
-		if (error instanceof Error) {
-			throw error;
-		} else {
-			throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
-		}
+		if (error instanceof Error) throw error;
+		throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
 	}
 };
 
 const prepareMergedFile = async ({
 	files,
 	mergedFileName,
+	merge,
 }: {
 	files: ProcessedFileList;
 	mergedFileName: string;
+	merge: Merge;
 }): Promise<MergeFileResult> => {
 	try {
-		const blobFile = await createMergedFileBlob({ files });
+		const blobFile = await createMergedFileBlob({ processedFiles: files, merge });
 		const downloadUrl = URL.createObjectURL(blobFile);
 
 		return {
@@ -192,33 +129,26 @@ const prepareMergedFile = async ({
 			fileName: `${mergedFileName}.pdf`,
 		};
 	} catch (error) {
-		if (error instanceof Error) {
-			throw error;
-		} else {
-			throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
-		}
+		if (error instanceof Error) throw error;
+		throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
 	}
 };
 
-// 다운로드 버튼 클릭 시 호출
 const downloadMergedFile = ({ downloadUrl, fileName }: { downloadUrl?: string; fileName: string }) => {
 	// URL Validation
 	if (!downloadUrl?.startsWith('blob:')) {
 		throw new Error('Invalid download URL: Only blob URLs are allowed');
 	}
 
-	// FileName sanitize
 	const sanitizedFileName = fileName.replace(/[\/\\]/g, '_');
 
 	const a = document.createElement('a');
+
 	a.href = downloadUrl;
 	a.download = sanitizedFileName;
-
-	// 보안 속성 추가
 	a.rel = 'noopener noreferrer';
 
 	a.click();
-
 	a.remove();
 };
 
@@ -231,8 +161,7 @@ export type { PageItem, RawFileItem, ProcessedFileItem, RawFileList, ProcessedFi
 export {
 	ASYNC_PDF_MESSAGE,
 	getTotalPageCount,
-	getCountedPages,
-	saveFileOnLocal,
+	getProcessedFileListWithCountedPages,
 	createMergedFileBlob,
 	prepareMergedFile,
 	downloadMergedFile,

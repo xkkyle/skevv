@@ -3,7 +3,7 @@
 import React from 'react';
 import { DropEvent, FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
-import { type RawFileItem, getCountedPages } from '@/components';
+import { type RawFileItem, getProcessedFileListWithCountedPages } from '@/components';
 import { useFileStore } from '@/store';
 import { PDF_HQ } from '@/constants';
 
@@ -40,7 +40,7 @@ export default function useDropzoneFiles() {
 			}
 
 			const asyncFiles = await toast
-				.promise(getCountedPages(fileList), {
+				.promise(getProcessedFileListWithCountedPages(fileList), {
 					loading: 'Loading all your files...',
 					success: `Successfully upload your files ${rejections.length ? `without ${rejections.length} file` : ''}`,
 					error: 'Error happened to add files',

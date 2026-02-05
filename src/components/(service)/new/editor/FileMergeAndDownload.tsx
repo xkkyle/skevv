@@ -22,7 +22,7 @@ import {
 	downloadMergedFile,
 	Badge,
 } from '@/components';
-import { useDropzoneFiles } from '@/hooks';
+import { useDropzoneFiles, usePdfWorker } from '@/hooks';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
 import { smartFormatBytes } from '@/constants';
 
@@ -44,6 +44,8 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 			fileName: DEFAULT_FILE_NAME,
 		},
 	});
+
+	const { merge } = usePdfWorker();
 
 	const step = useMergeFlowStore(({ step }) => step);
 	const mergedResult = useMergeFlowStore(({ mergedResult }) => mergedResult);
@@ -71,7 +73,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 
 		try {
 			const { success, message, downloadUrl, fileName, fileSize } = await startTransition(
-				prepareMergedFile({ files, mergedFileName: form.getValues('fileName') }),
+				prepareMergedFile({ files, merge, mergedFileName: form.getValues('fileName') }),
 			);
 
 			if (success && downloadUrl) {

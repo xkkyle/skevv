@@ -63,7 +63,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		},
 		effectTriggers: [containerWidth],
 	});
-	console.log(file);
+
 	const calculateHeights = async (pdf: PDFDocumentProxy, containerWidth: number) => {
 		const heights: number[] = [];
 		const PADDING = 12;
