@@ -1,9 +1,9 @@
 'use client';
 
-import { closestCenter, DndContext, DragEndEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { closestCenter, DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { ScrollArea, SortableFilePage } from '@/components';
-import { useDropzoneFiles } from '@/hooks';
+import { useAdaptiveSensors, useDropzoneFiles } from '@/hooks';
 import { type ProcessedFileItem } from '../pdf';
 
 interface SortableFilePagesProps {
@@ -13,20 +13,7 @@ interface SortableFilePagesProps {
 
 export default function SortableFilePageList({ file, isOpen }: SortableFilePagesProps) {
 	const { files, setFiles } = useDropzoneFiles();
-	const pageSensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: {
-				distance: 2,
-			},
-		}),
-		useSensor(MouseSensor),
-		useSensor(TouchSensor, {
-			activationConstraint: {
-				delay: 10, // 50ms
-				tolerance: 2, // 5px
-			},
-		}),
-	);
+	const { sensors, sensorType } = useAdaptiveSensors();
 
 	const sortedPages = [...file.pages].sort((prev, curr) => prev.order - curr.order);
 
@@ -55,7 +42,8 @@ export default function SortableFilePageList({ file, isOpen }: SortableFilePages
 		<div className="grid grid-cols-12 w-full">
 			<div className="col-span-1 ml-1 h-full w-1.5 bg-muted rounded-full" />
 			<DndContext
-				sensors={pageSensors}
+				key={sensorType}
+				sensors={sensors}
 				collisionDetection={closestCenter}
 				onDragEnd={(event: DragEndEvent) => handlePageDragEnd(event, file.id)}>
 				<SortableContext items={sortedPages.map(page => page.id)} strategy={verticalListSortingStrategy}>
