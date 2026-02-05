@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { BetweenHorizonalEnd, ChevronRight, EllipsisVertical, FileText, Plus } from 'lucide-react';
-import { closestCenter, DndContext, DragEndEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { closestCenter, DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { toast } from 'sonner';
 import { Button, MotionBlock, SortableFile, FileMergeAndDownloadContext, Input, AnimateSpinner, FileInsertSkeleton } from '@/components';
-import { useDropzoneFiles, useFileAccordions, useKeyboardTrigger, useMediaQuery } from '@/hooks';
+import { useAdaptiveSensors, useDropzoneFiles, useFileAccordions, useKeyboardTrigger, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
 import { cn } from '@/lib/utils';
 
@@ -25,26 +25,7 @@ export default function FileListPanel() {
 
 	const { fileAccordions, isSomeAccordionOpen, toggle, toggleAll, closeAll } = useFileAccordions({ files });
 
-	const desktopSensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: { distance: 6 },
-		}),
-		useSensor(MouseSensor, {
-			activationConstraint: { distance: 6 },
-		}),
-	);
-
-	const mobileSensors = useSensors(
-		useSensor(TouchSensor, {
-			activationConstraint: {
-				delay: 120,
-				tolerance: 6,
-			},
-		}),
-	);
-
-	const sensorType = isXSDown ? 'mobile' : 'desktop';
-	const sensors = isXSDown ? mobileSensors : desktopSensors;
+	const { sensors, sensorType } = useAdaptiveSensors();
 
 	useKeyboardTrigger({
 		handler: (e: KeyboardEvent) => {
