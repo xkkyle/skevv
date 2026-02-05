@@ -5,13 +5,6 @@ import { ProcessedFileItem } from '@/components';
 type SetFilesArg = ProcessedFileItem[] | ((prev: ProcessedFileItem[]) => ProcessedFileItem[]);
 type SetProcessedFiles = (files: ProcessedFileItem[]) => void;
 
-// interface PersistedFile {
-// 	id: string;
-// 	name: string;
-// 	size: number;
-// 	pageCount: number;
-// }
-
 interface FileStore {
 	files: ProcessedFileItem[];
 	setFiles: (argument: SetFilesArg) => void;

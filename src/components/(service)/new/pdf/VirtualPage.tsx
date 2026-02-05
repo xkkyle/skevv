@@ -3,6 +3,8 @@
 import { useInView } from 'react-intersection-observer';
 import { Page } from 'react-pdf';
 import { AnimateSpinner, type PageItem } from '@/components';
+import { DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
+import { useMediaQuery } from '@/hooks';
 
 interface VirtualPageProps {
 	page: PageItem;
@@ -12,9 +14,20 @@ interface VirtualPageProps {
 	containerWidth: number;
 }
 
+function Skeleton({ height }: { height?: React.CSSProperties['height'] }) {
+	return (
+		<div style={{ height }} className="ui-flex-center w-full bg-light rounded-lg">
+			<AnimateSpinner size={18} />
+		</div>
+	);
+}
+
 export default function VirtualPage({ page, style, pageNumber, startPageNumber, containerWidth }: VirtualPageProps) {
+	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+
 	const { ref: inViewRef, inView } = useInView({
-		rootMargin: '300px 0px',
+		root: null,
+		rootMargin: isSMDown ? '150px 0px' : '300px 0px',
 	});
 
 	return (
@@ -25,22 +38,16 @@ export default function VirtualPage({ page, style, pageNumber, startPageNumber, 
 
 			{inView ? (
 				<Page
-					devicePixelRatio={2.5}
+					devicePixelRatio={DEVICE_PIXEL_RATIO}
 					pageNumber={pageNumber}
-					loading={
-						<div style={{ height: style.height }} className="ui-flex-center w-full bg-light rounded-lg">
-							<AnimateSpinner size={18} />
-						</div>
-					}
+					loading={<Skeleton height={style?.height} />}
 					width={containerWidth}
 					renderTextLayer={false}
 					renderAnnotationLayer={false}
 					className="ui-flex-center w-full border border-gray-200"
 				/>
 			) : (
-				<div style={{ height: style.height }} className="ui-flex-center w-full bg-light rounded-lg">
-					<AnimateSpinner size={18} />
-				</div>
+				<Skeleton height={style?.height} />
 			)}
 		</div>
 	);

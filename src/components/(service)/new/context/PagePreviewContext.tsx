@@ -17,7 +17,7 @@ import {
 	PdfPreviewSkeleton,
 } from '@/components';
 import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
-import { screenSize } from '@/constants';
+import { DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -66,7 +66,7 @@ function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePre
 				onSourceError={error => console.error('react-pdf onSourceError:', error)}
 				error={<PdfDocumentErrorMessage />}>
 				<Page
-					devicePixelRatio={2.5}
+					devicePixelRatio={DEVICE_PIXEL_RATIO}
 					loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={300} />}
 					pageNumber={pageNumber}
 					width={containerWidth}

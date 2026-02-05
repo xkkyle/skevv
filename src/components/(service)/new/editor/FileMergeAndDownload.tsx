@@ -22,7 +22,7 @@ import {
 	downloadMergedFile,
 	Badge,
 } from '@/components';
-import { useDropzoneFiles } from '@/hooks';
+import { useDropzoneFiles, usePdfWorker } from '@/hooks';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
 import { smartFormatBytes } from '@/constants';
 
@@ -45,6 +45,9 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 		},
 	});
 
+	const { merge } = usePdfWorker();
+	const { onReset } = useDropzoneFiles();
+
 	const step = useMergeFlowStore(({ step }) => step);
 	const mergedResult = useMergeFlowStore(({ mergedResult }) => mergedResult);
 	const setStep = useMergeFlowStore(({ setStep }) => setStep);
@@ -52,8 +55,6 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 	const reset = useMergeFlowStore(({ reset }) => reset);
 
 	const filesKey = React.useMemo(() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}`).join('|'), [files]);
-
-	const { onReset } = useDropzoneFiles();
 
 	React.useEffect(() => {
 		if (!isOpen) return;
@@ -71,7 +72,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 
 		try {
 			const { success, message, downloadUrl, fileName, fileSize } = await startTransition(
-				prepareMergedFile({ files, mergedFileName: form.getValues('fileName') }),
+				prepareMergedFile({ files, merge, mergedFileName: form.getValues('fileName') }),
 			);
 
 			if (success && downloadUrl) {

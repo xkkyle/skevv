@@ -14,14 +14,17 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 	return (
 		<html>
 			<body>
-				<div className="ui-flex-center flex-1 w-screen h-screen">
+				<div className="flex flex-col justify-center items-center flex-1 w-screen h-screen">
+					<h1 className="font-black text-4xl text-center">Skevv</h1>
 					<h2 className="font-bold text-xl">페이지에 문제가 있습니다.</h2>
-					<Button onClick={() => reset()} variant="secondary">
-						<Rotate3d size={18} /> 재시도
-					</Button>
-					<Button type="button" asChild>
-						<Link href={route.SERVICE.ROOT}>홈으로 가기</Link>
-					</Button>
+					<div className="flex items-center gap-2">
+						<Button onClick={() => reset()} variant="secondary">
+							<Rotate3d size={18} /> 재시도
+						</Button>
+						<Button type="button" asChild>
+							<Link href={route.SERVICE.ROOT}>홈으로 가기</Link>
+						</Button>
+					</div>
 				</div>
 			</body>
 		</html>

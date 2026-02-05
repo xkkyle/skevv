@@ -31,7 +31,6 @@ function TriggerButton({ open, ...props }: { open: () => void }) {
 
 export default function FileResetConfirmContext({ isOpen, toggle }: FileResetConfirmContextProps) {
 	const { onReset } = useDropzoneFiles();
-	const isMobile = useMediaQuery(screenSize.MAX_SM);
 
 	const title = 'Reset Current Files';
 	const description = 'Do you really mind to reset files?';
@@ -49,7 +48,7 @@ export default function FileResetConfirmContext({ isOpen, toggle }: FileResetCon
 					<DialogTitle className="text-xl">{title}</DialogTitle>
 					<DialogDescription>{description}</DialogDescription>
 				</DialogHeader>
-				<DialogFooter>
+				<DialogFooter className="pt-3 border-t border-muted">
 					<DialogClose asChild>
 						<Button type="button" variant="outline" onClick={close}>
 							Cancel

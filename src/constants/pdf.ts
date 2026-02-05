@@ -5,6 +5,8 @@ const PDF_HQ = {
 
 const PDF_DEFAULT_HEIGHT = 426;
 
+const DEVICE_PIXEL_RATIO = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 1.5) : 1;
+
 const formatBytes = (bytes: number, decimals = 1) => {
 	if (bytes === 0) return '0 B';
 
@@ -24,4 +26,4 @@ function smartFormatBytes(bytes: number) {
 	return formatBytes(bytes, 2);
 }
 
-export { PDF_DEFAULT_HEIGHT, PDF_HQ, formatBytes, smartFormatBytes };
+export { PDF_HQ, PDF_DEFAULT_HEIGHT, DEVICE_PIXEL_RATIO, formatBytes, smartFormatBytes };

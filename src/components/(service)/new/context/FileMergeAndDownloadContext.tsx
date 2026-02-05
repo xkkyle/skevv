@@ -3,6 +3,7 @@
 import React from 'react';
 import {
 	Button,
+	Callout,
 	Dialog,
 	DialogClose,
 	DialogContent,
@@ -19,6 +20,7 @@ import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useLoading, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
+import { CircleAlert } from 'lucide-react';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;
@@ -54,7 +56,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const title = currentStep === 'merge' ? 'Merge Files' : 'Download merged file';
 	const description =
 		currentStep === 'merge'
-			? `⚡️ Type file name first.  ${isSMDown ? 'Press' : 'Click'} merge when you're done, then.`
+			? `⚡️ Type file name first. ${isSMDown ? 'Press' : 'Click'} merge when you're done, then.`
 			: `✅ Your PDF is ready to download`;
 
 	const onClose = () => {
@@ -66,10 +68,18 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 			<DialogTrigger asChild>
 				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} disabled={isOneFile} />
 			</DialogTrigger>
-			<DialogContent className="w-[90dvw] max-w-[500px]">
+			<DialogContent className="w-[90dvw] max-w-[500px]" onOpenAutoFocus={e => e.preventDefault()}>
 				<DialogHeader>
 					<DialogTitle className="text-xl">{title}</DialogTitle>
-					<DialogDescription className="text-start text-sm text-gray-500 font-medium">{description}</DialogDescription>
+					{isOneFile ? (
+						<Callout
+							message={'At least 2 files to merge. Merge more files with the Pro plan'}
+							icon={<CircleAlert size={18} />}
+							className="text-start"
+						/>
+					) : (
+						<DialogDescription className="text-sm text-gray-500 font-medium">{description}</DialogDescription>
+					)}
 				</DialogHeader>
 				<FileMergeAndDownload
 					files={files}
@@ -79,6 +89,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					startTransition={startTransition}
 					onClose={onClose}
 				/>
+
 				{currentStep === 'merge' && (
 					<DialogFooter className="pt-3 border-t border-muted">
 						<DialogClose asChild>
@@ -86,7 +97,12 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								Cancel
 							</Button>
 						</DialogClose>
-						<FileMergeButton isLoading={isLoading} Loading={<Loading />} mergeFormId={mergeFormId} disabled={currentStep !== 'merge'} />
+						<FileMergeButton
+							isLoading={isLoading}
+							Loading={<Loading />}
+							mergeFormId={mergeFormId}
+							disabled={currentStep !== 'merge' || isOneFile}
+						/>
 					</DialogFooter>
 				)}
 			</DialogContent>
