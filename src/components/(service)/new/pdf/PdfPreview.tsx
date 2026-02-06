@@ -133,8 +133,8 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 					file={file}
 					loading={<PdfPreviewSkeleton pageCount={pages.length} estimateHeight={getEstimateHeightSize(1)} />}
 					onLoadSuccess={handleDocumentLoadSuccess}
-					onLoadError={error => console.error('react-pdf onLoadError:', error)}
-					onSourceError={error => console.error('react-pdf onSourceError:', error)}
+					onLoadError={error => console.error('react-pdf [onLoadError]:', error)}
+					onSourceError={error => console.error('react-pdf [onSourceError]:', error)}
 					error={<PdfDocumentErrorMessage />}
 					className="relative">
 					<div className="scrollbar-thin" style={{ position: 'relative', width: containerWidth, height: rowVirtualizer?.getTotalSize() }}>

@@ -2,9 +2,10 @@
 
 import { useInView } from 'react-intersection-observer';
 import { Page } from 'react-pdf';
-import { AnimateSpinner, type PageItem } from '@/components';
+import { AnimateSpinner, Badge, type PageItem } from '@/components';
 import { DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
 import { useMediaQuery } from '@/hooks';
+import { Hash } from 'lucide-react';
 
 interface VirtualPageProps {
 	page: PageItem;
@@ -32,9 +33,10 @@ export default function VirtualPage({ page, style, pageNumber, startPageNumber, 
 
 	return (
 		<div ref={inViewRef} style={style} id={page.id} className="relative">
-			<span className="absolute top-2 right-2 ui-flex-center w-6 h-6 bg-gray-200 text-sm text-gray-600 rounded-full z-10">
+			<Badge variant="secondary" className="absolute top-2 right-2 ui-flex-center text-sm text-gray-600 z-10">
+				<Hash className="text-blue-500" />
 				{startPageNumber + (page.order - 1)}
-			</span>
+			</Badge>
 
 			{inView ? (
 				<Page

@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 	return (
 		<html>
 			<body>
-				<div className="flex flex-col justify-center items-center flex-1 w-screen h-screen">
+				<div className="flex flex-col justify-center items-center flex-1 gap-4 w-screen h-screen">
 					<h1 className="font-black text-4xl text-center">Skevv</h1>
 					<h2 className="font-bold text-xl">페이지에 문제가 있습니다.</h2>
 					<div className="flex items-center gap-2">

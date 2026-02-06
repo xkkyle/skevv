@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { KeyboardSensor, PointerSensor, TouchSensor, useSensors, useSensor } from '@dnd-kit/core';
 import { isTouchPrimary } from '@/utils/touch';
 
 export default function useAdaptiveSensors() {

@@ -82,8 +82,8 @@ export default function FileListPanel() {
 			action: {
 				label: 'Undo',
 				onClick: () => {
-					setFiles(files => {
-						const next = [...files];
+					setFiles(prevFiles => {
+						const next = [...prevFiles];
 						next.splice(removedIndex, 0, removed);
 
 						return next;
@@ -119,7 +119,7 @@ export default function FileListPanel() {
 				<DndContext key={sensorType} sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 					<SortableContext items={files.map(({ id }) => id)} strategy={verticalListSortingStrategy}>
 						<div
-							className="flex flex-col flex-1 shrink-0 items-center gap-1 pb-2 w-full h-full overflow-y-scroll scrollbar-thin touch-pan-y md:min-h-0 sm:pb-16"
+							className="flex flex-col flex-1 shrink-0 min-h-0 items-center gap-1 pb-2 w-full h-full overflow-y-scroll scrollbar-thin touch-pan-y md:min-h-0 sm:pb-16"
 							style={{ WebkitOverflowScrolling: 'touch' }}
 							{...rootProps}>
 							{files?.map(file => (
@@ -138,7 +138,7 @@ export default function FileListPanel() {
 							{isDragActive && isDragAccept && <FileInsertSkeleton filesLength={currentDragFilesCount} />}
 
 							<MotionBlock
-								className={`relative flex-1 mx-auto w-[calc(100%-8px)] ${
+								className={`relative flex-1 mx-auto my-1 w-[calc(100%-8px)] ${
 									isDragActive ? 'bg-gradient-gray-200' : 'bg-gradient-gray-100'
 								} rounded-2xl outline outline-dashed outline-offset-2 outline-gray-300 transition-colors sm:block sm:h-full`}>
 								<Input

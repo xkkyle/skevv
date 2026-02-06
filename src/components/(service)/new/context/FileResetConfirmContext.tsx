@@ -13,8 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui';
-import { useDropzoneFiles, useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constants';
+import { useDropzoneFiles } from '@/hooks';
 
 interface FileResetConfirmContextProps {
 	isOpen: boolean;

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 import React from 'react';
 import { throttle } from 'es-toolkit';
 
@@ -10,10 +9,9 @@ interface UseResizableObserverProps {
 const SCROLL_BAR_WIDTH = 6;
 const THROTTLE_TIME = 150;
 
-function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effectTriggers = [] }: UseResizableObserverProps) {
-	const [containerWidth, setContainerWidth] = React.useState<number>(initialWidth);
-
+function useResizableObserver<T extends HTMLElement | null>({ initialWidth = 300, effectTriggers = [] }: UseResizableObserverProps) {
 	const containerRef = React.useRef<T>(null);
+	const [containerWidth, setContainerWidth] = React.useState<number>(initialWidth);
 
 	/**
 	 * ⚡️ Change width depends on parent width
@@ -25,6 +23,7 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effec
 		 getComputedStyle(element).width - CSS상 width (box-sizing 영향 있음) "500px" (문자열) 소수점 가능
 	 */
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const handleResize = () => {
 		const target = containerRef.current;
 
@@ -35,6 +34,7 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effec
 
 		const targetStyle = getComputedStyle(target);
 		const paddingX = (parseFloat(targetStyle.paddingLeft) || 0) + (parseFloat(targetStyle.paddingRight) || 0);
+
 		const borderWidth = parseFloat(targetStyle.borderWidth) || 0;
 
 		const currentWidth = width - paddingX - 2 * SCROLL_BAR_WIDTH - 2 * borderWidth;
@@ -60,6 +60,7 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300, effec
 		return () => {
 			window.removeEventListener('resize', handleResize);
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [...effectTriggers]);
 
 	// container resizing

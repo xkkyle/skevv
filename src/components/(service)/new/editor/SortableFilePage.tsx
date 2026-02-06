@@ -33,32 +33,34 @@ export default function SortableFilePage({ page }: SortableFilePageProps) {
 	const [isPagePreviewContextOpen, setIsPagePreviewContextOpen] = React.useState(false);
 
 	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
-		const fileId = pageId.split('-page-')[0];
-		const file = files.find(file => file.id === fileId);
+		const idx = pageId.indexOf('-page-');
+		const fileId = idx === -1 ? pageId : pageId.slice(0, idx);
 
-		const removed = file?.pages.find(page => page.id === pageId);
-		if (!file || !removed) return;
+		const targetFile = files.find(file => file.id === fileId);
 
-		const removedIndex = [...file.pages].sort((prev, curr) => prev.order - curr.order).findIndex(page => page.id === pageId); // Current Display Order index -> to undo on Toast
+		const removed = targetFile?.pages.find(page => page.id === pageId);
+
+		if (!targetFile || !removed) return;
+		const removedIndex = [...targetFile.pages].sort((prev, curr) => prev.order - curr.order).findIndex(page => page.id === pageId); // Current Display Order index -> to undo on Toast
 
 		// 1) Remove
 		setFiles(files => deletePageFromFiles(files, pageId));
 
 		// 2) Undo
 		toast('Removed page', {
-			description: `Page ${removed.order}`,
+			description: `${targetFile.file.name} - Page ${removed.order}`,
 			action: {
 				label: 'Undo',
 				onClick: () => {
-					setFiles(prev =>
-						prev.map(file => {
+					setFiles(prevFiles =>
+						prevFiles.map(file => {
 							if (file.id !== fileId) return file;
 
 							// Revert : insert original page(removed) into current pages(next) and reorder
 							const next = [...file.pages];
 							next.splice(Math.max(0, removedIndex), 0, removed);
 
-							const normalized = next.sort((prev, curr) => prev.order - curr.order).map((p, idx) => ({ ...p, order: idx + 1 }));
+							const normalized = next.sort((prev, curr) => prev.order - curr.order).map((page, idx) => ({ ...page, order: idx + 1 }));
 
 							return { ...file, pages: normalized, pageCount: normalized.length };
 						}),

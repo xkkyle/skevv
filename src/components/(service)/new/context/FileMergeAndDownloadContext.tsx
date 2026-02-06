@@ -28,7 +28,7 @@ interface FileMergeAndDownloadContextProps {
 	toggle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function TriggerButton({ pageCount, isSMDown, disabled, ...props }: { pageCount: number; isSMDown: boolean; disabled: boolean }) {
+function TriggerButton({ pageCount, isSMDown, disabled = false, ...props }: { pageCount: number; isSMDown: boolean; disabled?: boolean }) {
 	return (
 		<Button
 			type="button"
@@ -52,6 +52,9 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const pageCount = getTotalPageCount(files);
 
 	const isOneFile = files.length < 2;
+	//TODO: less than 50 -> Free Plan
+	// over 50 -> Lite Plan
+	// until 1000 -> Pro Plan
 
 	const title = currentStep === 'merge' ? 'Merge Files' : 'Download merged file';
 	const description =
@@ -66,7 +69,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	return (
 		<Dialog open={isOpen} onOpenChange={toggle}>
 			<DialogTrigger asChild>
-				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} disabled={isOneFile} />
+				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
 			</DialogTrigger>
 			<DialogContent className="w-[90dvw] max-w-[500px]" onOpenAutoFocus={e => e.preventDefault()}>
 				<DialogHeader>
@@ -89,7 +92,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					startTransition={startTransition}
 					onClose={onClose}
 				/>
-
+				{isLoading && <Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />}
 				{currentStep === 'merge' && (
 					<DialogFooter className="pt-3 border-t border-muted">
 						<DialogClose asChild>

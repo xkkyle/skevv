@@ -11,14 +11,17 @@ interface FileStore {
 	resetFiles: () => void;
 }
 
+const sanitizeFiles = (files: ProcessedFileItem[]) => files.filter(file => (file.pageCount ?? 0) > 0);
+
 const useFileStore = create(
 	persist<FileStore>(
 		set => ({
 			files: [],
 			setFiles: argument =>
-				set(state => ({
-					files: typeof argument === 'function' ? argument(state.files) : argument,
-				})),
+				set(state => {
+					const newFiles = typeof argument === 'function' ? argument(state.files) : argument;
+					return { files: sanitizeFiles(newFiles) };
+				}),
 			resetFiles: () => set({ files: [] }),
 		}),
 		{

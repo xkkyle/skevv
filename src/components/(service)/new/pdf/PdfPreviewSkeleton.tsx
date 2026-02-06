@@ -1,12 +1,20 @@
-import { AnimateSpinner } from '@/components';
+import { AnimateSpinner, Skeleton } from '@/components';
 
-export default function PdfPreviewSkeleton({ pageCount = 3, estimateHeight = 180 }: { pageCount?: number; estimateHeight?: number }) {
+export default function PdfPreviewSkeleton({
+	pageCount = 3,
+	estimateHeight = 180,
+	description = '',
+}: {
+	pageCount?: number;
+	estimateHeight?: number;
+	description?: string;
+}) {
 	return (
 		<>
 			{pageCount === 1 ? (
-				<div style={{ height: estimateHeight }} className="ui-flex-center w-full bg-light rounded-lg">
-					<AnimateSpinner size={18} />
-				</div>
+				<Skeleton style={{ height: estimateHeight }} className="ui-flex-center w-full">
+					<AnimateSpinner size={18} /> {description}
+				</Skeleton>
 			) : (
 				<div className="flex flex-col gap-2">
 					{Array.from({ length: pageCount }).map((_, idx) => (
