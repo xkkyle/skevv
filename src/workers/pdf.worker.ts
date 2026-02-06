@@ -48,7 +48,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
 						pages,
 						toArray,
 						array => array.sort((prev, curr) => prev.order - curr.order),
-						map(p => +p.id.split('-page-')[1] - 1),
+						map(page => +page.id.split('-page-')[1] - 1),
 						toArray,
 					);
 

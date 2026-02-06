@@ -17,7 +17,7 @@ import {
 	PdfPreviewSkeleton,
 } from '@/components';
 import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
-import { DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
+import { DEFAULT_A4_RATIO, DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -62,12 +62,13 @@ function PagePreview({ file, pageNumber, containerWidth, rotatedAngle }: PagePre
 		<div className="my-3">
 			<Document
 				file={file}
-				onLoadError={error => console.error('react-pdf onLoadError:', error)}
-				onSourceError={error => console.error('react-pdf onSourceError:', error)}
+				loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={containerWidth} description={'Loading...'} />}
+				onLoadError={error => console.error('react-pdf [onLoadError]:', error)}
+				onSourceError={error => console.error('react-pdf [onSourceError]:', error)}
 				error={<PdfDocumentErrorMessage />}>
 				<Page
 					devicePixelRatio={DEVICE_PIXEL_RATIO}
-					loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={300} />}
+					loading={<PdfPreviewSkeleton pageCount={1} estimateHeight={containerWidth * DEFAULT_A4_RATIO} />}
 					pageNumber={pageNumber}
 					width={containerWidth}
 					renderTextLayer={false}
@@ -112,7 +113,7 @@ export default function PagePreviewContext({ page, isOpen, toggle }: PagePreview
 			return angle;
 		});
 
-	const file = files.filter(file => page.id.includes(file.id))[0].file;
+	const file = React.useMemo(() => files.find(file => page.id.includes(file.id))?.file, [files, page.id]);
 	const pageNumber = +page.id.split('-page-')[1];
 
 	const title = `Page ${page.order} Preview`;

@@ -54,7 +54,10 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 	const setMergedResult = useMergeFlowStore(({ setMergedResult }) => setMergedResult);
 	const reset = useMergeFlowStore(({ reset }) => reset);
 
-	const filesKey = React.useMemo(() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}`).join('|'), [files]);
+	const filesKey = React.useMemo(
+		() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}-${processedFile.pages.length}`).join('|'),
+		[files],
+	);
 
 	React.useEffect(() => {
 		if (!isOpen) return;

@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight, GripVertical, X } from 'lucide-react';
+import { ChevronRight, File, GripVertical, X } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
-import { Button, ProcessedFileItem, SortableFilePageList } from '@/components';
+import { Badge, Button, ProcessedFileItem, SortableFilePageList } from '@/components';
 import { getTransformStyleOnSortableContext } from '@/utils/dndSortable';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +40,11 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 							<ChevronRight className={`${filePage?.isOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</Button>
 					</div>
-					<span className="grow inline-block font-medium break-all whitespace-normal text-ellipsis">{file.file.name}</span>
+					<span className="inline-block truncate max-w-[150px] font-medium">{file.file.name}</span>
+					<Badge className="bg-gradient-blue-100-ro text-white">
+						<File />
+						{file.pages.length}
+					</Badge>
 				</div>
 				<Button type="button" size="icon-sm" variant="ghost" onClick={() => deleteFileWithUndo(file.id)}>
 					<X />

@@ -5,6 +5,8 @@ const PDF_HQ = {
 
 const PDF_DEFAULT_HEIGHT = 426;
 
+const DEFAULT_A4_RATIO = 1.414; // A4 portrait
+
 const DEVICE_PIXEL_RATIO = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 1.5) : 1;
 
 const formatBytes = (bytes: number, decimals = 1) => {
@@ -26,4 +28,4 @@ function smartFormatBytes(bytes: number) {
 	return formatBytes(bytes, 2);
 }
 
-export { PDF_HQ, PDF_DEFAULT_HEIGHT, DEVICE_PIXEL_RATIO, formatBytes, smartFormatBytes };
+export { PDF_HQ, DEFAULT_A4_RATIO, PDF_DEFAULT_HEIGHT, DEVICE_PIXEL_RATIO, formatBytes, smartFormatBytes };
