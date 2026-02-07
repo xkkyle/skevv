@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 export default function FileListPanel() {
 	const {
-		dropzone: { getRootProps, getInputProps, isFileDialogActive, isDragActive, isDragAccept, isDragReject, open },
+		dropzone: { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject, open },
 		files,
 		setFiles,
 		isLoading,
@@ -28,9 +28,9 @@ export default function FileListPanel() {
 
 	const { sensors, sensorType } = useAdaptiveSensors();
 
-	const showSpinner = isLoading;
-	const showDropHere = !isLoading && isDragActive && isDragAccept;
-	const showRejected = !isLoading && isDragActive && isDragReject;
+	const loading = isLoading;
+	const accepting = !isLoading && isDragActive && isDragAccept;
+	const rejecting = !isLoading && isDragActive && isDragReject;
 
 	useKeyboardTrigger({
 		handler: (e: KeyboardEvent) => {
@@ -165,17 +165,17 @@ export default function FileListPanel() {
 								<label
 									htmlFor={`file-dropzone-${fileInputId}`}
 									className="ui-flex-center min-h-64 w-full h-full cursor-pointer sm:min-h-100">
-									{showSpinner ? (
+									{loading ? (
 										<div className="inline-flex items-center gap-2">
 											<AnimateSpinner />
 											<span className="text-gray-900 font-medium">Processing...</span>
 										</div>
-									) : showDropHere ? (
+									) : accepting ? (
 										<div className="inline-flex items-center gap-2">
 											<AnimateSpinner />
 											<span className="text-gray-900 font-medium">Drop your files here!</span>
 										</div>
-									) : showRejected ? (
+									) : rejecting ? (
 										<p className="text-gray-900 font-medium">Only PDF Files accepted</p>
 									) : (
 										<p className="ui-flex-center items-center gap-2">
