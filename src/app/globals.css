@@ -270,6 +270,10 @@
 		}
 	}
 
+	.bg-gradient-blue-50 {
+		@apply bg-radial-[at_25%_90%] from-sky-100 via-blue-300 to-sky-50;
+	}
+
 	.bg-gradient-blue-100 {
 		@apply bg-radial-[at_25%_90%] from-sky-200 via-blue-400 to-sky-50;
 	}

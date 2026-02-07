@@ -15,6 +15,7 @@ export default function FileListPanel() {
 		dropzone: { getRootProps, getInputProps, isFileDialogActive, isDragActive, isDragAccept, isDragReject, open },
 		files,
 		setFiles,
+		isLoading,
 	} = useDropzoneFiles();
 
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
@@ -26,6 +27,10 @@ export default function FileListPanel() {
 	const { fileAccordions, isSomeAccordionOpen, toggle, toggleAll, closeAll } = useFileAccordions({ files });
 
 	const { sensors, sensorType } = useAdaptiveSensors();
+
+	const showSpinner = isLoading;
+	const showDropHere = !isLoading && isDragActive && isDragAccept;
+	const showRejected = !isLoading && isDragActive && isDragReject;
 
 	useKeyboardTrigger({
 		handler: (e: KeyboardEvent) => {
@@ -135,12 +140,17 @@ export default function FileListPanel() {
 								</React.Fragment>
 							))}
 
-							{isDragActive && isDragAccept && <FileInsertSkeleton filesLength={currentDragFilesCount} />}
+							{(isLoading || (isDragActive && isDragAccept)) && <FileInsertSkeleton filesLength={currentDragFilesCount} />}
 
 							<MotionBlock
-								className={`relative flex-1 mx-auto my-1 w-[calc(100%-8px)] ${
-									isDragActive ? 'bg-gradient-gray-200' : 'bg-gradient-gray-100'
-								} rounded-2xl outline outline-dashed outline-offset-2 outline-gray-300 transition-colors sm:block sm:h-full`}>
+								className={cn(
+									`relative flex-1 mx-auto my-1 w-[calc(100%-8px)] rounded-2xl outline outline-dashed outline-offset-2 outline-gray-300 transition-colors sm:block sm:h-full`,
+									isLoading
+										? 'bg-gradient-indigo-gray-100'
+										: isDragActive && isDragAccept
+											? 'bg-gradient-gray-200'
+											: 'bg-gradient-gray-100',
+								)}>
 								<Input
 									type="file"
 									id={`file-dropzone-${fileInputId}`}
@@ -155,9 +165,17 @@ export default function FileListPanel() {
 								<label
 									htmlFor={`file-dropzone-${fileInputId}`}
 									className="ui-flex-center min-h-64 w-full h-full cursor-pointer sm:min-h-100">
-									{(isDragActive || isFileDialogActive) && isDragAccept ? (
-										<AnimateSpinner />
-									) : isDragActive && isDragReject ? (
+									{showSpinner ? (
+										<div className="inline-flex items-center gap-2">
+											<AnimateSpinner />
+											<span className="text-gray-900 font-medium">Processing...</span>
+										</div>
+									) : showDropHere ? (
+										<div className="inline-flex items-center gap-2">
+											<AnimateSpinner />
+											<span className="text-gray-900 font-medium">Drop your files here!</span>
+										</div>
+									) : showRejected ? (
 										<p className="text-gray-900 font-medium">Only PDF Files accepted</p>
 									) : (
 										<p className="ui-flex-center items-center gap-2">

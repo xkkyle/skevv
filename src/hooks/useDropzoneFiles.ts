@@ -18,6 +18,7 @@ function isDragEvent(e: unknown): e is React.DragEvent<HTMLElement> {
 
 export default function useDropzoneFiles() {
 	const { files, setFiles, resetFiles } = useFileStore();
+	const [isLoading, setIsLoading] = React.useState(false);
 
 	const hasFiles = files.length !== 0;
 
@@ -39,6 +40,8 @@ export default function useDropzoneFiles() {
 				toast.warning(`Uploaded ${rejections.length} files are not PDF type`);
 			}
 
+			setIsLoading(true);
+
 			const asyncFiles = await toast
 				.promise(getProcessedFileListWithCountedPages(fileList), {
 					loading: 'Loading all your files...',
@@ -58,6 +61,8 @@ export default function useDropzoneFiles() {
 			}
 		} catch (error) {
 			console.error(error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -69,5 +74,5 @@ export default function useDropzoneFiles() {
 		onDrop,
 	});
 
-	return { dropzone, hasFiles, files, setFiles, onReset: resetFiles };
+	return { dropzone, hasFiles, files, setFiles, isLoading, onReset: resetFiles };
 }

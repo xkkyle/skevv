@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { CirclePlus, FileUp } from 'lucide-react';
-import { MotionBlock, Button, Input } from '@/components';
+import { MotionBlock, Button, Input, AnimateSpinner } from '@/components';
 import { useDropzoneFiles } from '@/hooks';
 
 export default function FileDropZone() {
 	const {
 		dropzone: { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject, open },
+		isLoading,
 	} = useDropzoneFiles();
 	const fileInputId = React.useId();
 
@@ -16,11 +17,13 @@ export default function FileDropZone() {
 			<MotionBlock
 				{...getRootProps()}
 				className={`h-full ${
-					isDragActive && isDragAccept
-						? 'bg-gradient-blue-400'
-						: isDragActive && isDragReject
-							? 'bg-gradient-gray-100'
-							: 'bg-gradient-blue-300'
+					isLoading
+						? 'bg-gradient-blue-50'
+						: isDragActive && isDragAccept
+							? 'bg-gradient-blue-400'
+							: isDragActive && isDragReject
+								? 'bg-gradient-gray-100'
+								: 'bg-gradient-blue-300'
 				} rounded-2xl outline outline-dashed outline-offset-2 focus-visible:rounded-2xl focus-visible:outline focus-visible:outline-offset-4`}>
 				<Input
 					type="file"
@@ -32,13 +35,15 @@ export default function FileDropZone() {
 				<label
 					htmlFor={`file-dropzone-${fileInputId}`}
 					className="ui-flex-center gap-2 p-4 w-full h-full text-[15px] text-white font-bold cursor-pointer lg:p-36 lg:text-base">
-					<FileUp size={24} />
+					{isLoading ? <AnimateSpinner size={16} /> : <FileUp size={24} />}
 					<span>
-						{isDragActive && isDragAccept
-							? 'Put your files, here 😊'
-							: isDragActive && isDragReject
-								? 'Only PDF Files accepted'
-								: 'Drag and Drop Your PDFs'}
+						{isLoading
+							? 'Processing your files...'
+							: isDragActive && isDragAccept
+								? 'Drop your files here 😊'
+								: isDragActive && isDragReject
+									? 'Only PDF Files accepted'
+									: 'Drag and Drop Your PDFs'}
 					</span>
 				</label>
 			</MotionBlock>
@@ -46,6 +51,7 @@ export default function FileDropZone() {
 				type="button"
 				variant="secondary"
 				onClick={open}
+				disabled={isLoading}
 				className="absolute bottom-9 left-[50%] -translate-x-[50%] bg-gradient-blue-200 border-gray-200 text-white z-5">
 				<CirclePlus strokeWidth={2.5} /> Select your files
 			</Button>
