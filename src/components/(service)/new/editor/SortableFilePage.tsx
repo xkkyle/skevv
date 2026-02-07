@@ -1,8 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import React from 'react';
-import { EllipsisVertical, GripVertical, Trash } from 'lucide-react';
+import { EllipsisVertical, GripVertical, SquareMousePointer, Trash } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSortable } from '@dnd-kit/sortable';
 import {
@@ -14,23 +13,41 @@ import {
 	type PageItem,
 	deletePageFromFiles,
 } from '@/components';
-import { useDropzoneFiles } from '@/hooks';
+import { useDropzoneFiles, useMediaQuery } from '@/hooks';
 import { getTransformStyleOnSortableContext } from '@/utils/dndSortable';
+import { screenSize } from '@/constants';
 
 interface SortableFilePageProps {
 	page: PageItem;
+	onOpenPreview: (pageId: string) => void;
 }
 
-const PagePreviewContext = dynamic(() => import('../context/PagePreviewContext'), { ssr: false });
+function TriggerButton({ onClick, ...props }: { onClick: React.MouseEventHandler<HTMLButtonElement> }) {
+	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
-export default function SortableFilePage({ page }: SortableFilePageProps) {
+	return (
+		<Button
+			type="button"
+			size="icon-sm"
+			variant="ghost"
+			onClick={onClick}
+			className={`px-${isXSDown ? 'auto' : '4'}`}
+			onPointerDown={e => {
+				e.preventDefault();
+				e.stopPropagation();
+			}}
+			{...props}>
+			<SquareMousePointer className="text-gray-500" />
+		</Button>
+	);
+}
+
+export default function SortableFilePage({ page, onOpenPreview }: SortableFilePageProps) {
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
 		id: page.id,
 		animateLayoutChanges: () => false,
 	});
 	const { files, setFiles } = useDropzoneFiles();
-
-	const [isPagePreviewContextOpen, setIsPagePreviewContextOpen] = React.useState(false);
 
 	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
 		const idx = pageId.indexOf('-page-');
@@ -93,7 +110,14 @@ export default function SortableFilePage({ page }: SortableFilePageProps) {
 				<span>Page {page.order}</span>
 			</div>
 			<div className="flex items-center gap-1">
-				<PagePreviewContext page={page} isOpen={isPagePreviewContextOpen} toggle={setIsPagePreviewContextOpen} />
+				<TriggerButton
+					onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						onOpenPreview(page.id); // ✅ 여기서만 오픈
+					}}
+				/>
+
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild aria-label="Open Detail Menu">
 						<Button type="button" variant="ghost" size="icon-sm">

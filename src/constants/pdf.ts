@@ -7,7 +7,7 @@ const PDF_DEFAULT_HEIGHT = 426;
 
 const DEFAULT_A4_RATIO = 1.414; // A4 portrait
 
-const DEVICE_PIXEL_RATIO = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 1.5) : 1;
+const DEVICE_PIXEL_RATIO = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1.5;
 
 const formatBytes = (bytes: number, decimals = 1) => {
 	if (bytes === 0) return '0 B';

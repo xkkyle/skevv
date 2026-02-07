@@ -7,8 +7,8 @@ import { pdfjs, Document } from 'react-pdf';
 import { FileWithPath } from 'react-dropzone';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { type PageItem, PdfDocumentErrorMessage, PdfPreviewSkeleton } from '@/components';
-import { SCROLL_BAR_WIDTH, useDebouncedEffect } from '@/hooks';
-import { PDF_DEFAULT_HEIGHT } from '@/constants';
+import { useDebouncedEffect } from '@/hooks';
+import { DEFAULT_A4_RATIO } from '@/constants';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -37,8 +37,18 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	const [pageHeights, setPageHeights] = React.useState<number[]>([]);
 	const [isLoaded, setLoaded] = React.useState(false);
 
+	const getInitialEstimateHeight = React.useMemo(() => {
+		if (pageHeights.length > 0) {
+			const avgHeight = pageHeights.reduce((sum, h) => sum + h, 0) / pageHeights.length;
+			return avgHeight;
+		}
+
+		const PADDING = 12;
+		return containerWidth * DEFAULT_A4_RATIO + PADDING;
+	}, [containerWidth, pageHeights]);
+
 	// single row height
-	const getEstimateHeightSize = (index: number) => pageHeights[index] || PDF_DEFAULT_HEIGHT;
+	const getEstimateHeightSize = (index: number) => pageHeights[index] || getInitialEstimateHeight;
 
 	const rowVirtualizer = useVirtualizer({
 		count: isLoaded ? sortedPages.length : 0,
@@ -127,7 +137,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	// 1. get to know totalPages
 	// 2. after page's loading, execute other logic
 	return (
-		<div style={{ width: containerWidth + SCROLL_BAR_WIDTH }}>
+		<div style={{ width: containerWidth }}>
 			{file ? (
 				<Document
 					file={file}
@@ -137,7 +147,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 					onSourceError={error => console.error('react-pdf [onSourceError]:', error)}
 					error={<PdfDocumentErrorMessage />}
 					className="relative">
-					<div className="scrollbar-thin" style={{ position: 'relative', width: containerWidth, height: rowVirtualizer?.getTotalSize() }}>
+					<div style={{ position: 'relative', width: containerWidth, height: rowVirtualizer?.getTotalSize() }}>
 						{rowVirtualizer?.getVirtualItems().map(virtualRow => {
 							const index = virtualRow.index;
 							const page = sortedPages[index];

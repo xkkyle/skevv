@@ -12,7 +12,7 @@ export default function PdfPreviewSkeleton({
 	return (
 		<>
 			{pageCount === 1 ? (
-				<Skeleton style={{ height: estimateHeight }} className="ui-flex-center w-full">
+				<Skeleton style={{ height: estimateHeight }} className="ui-flex-center gap-2 w-full">
 					<AnimateSpinner size={18} /> {description}
 				</Skeleton>
 			) : (

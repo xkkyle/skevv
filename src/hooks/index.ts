@@ -10,4 +10,5 @@ export { default as useMergedRefs } from './useMergedRefs';
 
 export * from './use-mobile';
 export * from './useResizableObserver';
+export * from './useResizableObserverInDialog';
 export * from './usePdfWorker';

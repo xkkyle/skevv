@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight, File, GripVertical, X } from 'lucide-react';
+import { ChevronRight, GripVertical, X } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
-import { Badge, Button, ProcessedFileItem, SortableFilePageList } from '@/components';
+import { Button, ProcessedFileItem, SortableFilePageList } from '@/components';
 import { getTransformStyleOnSortableContext } from '@/utils/dndSortable';
 import { cn } from '@/lib/utils';
 
@@ -26,7 +26,7 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 				ref={setNodeRef}
 				{...attributes}
 				style={getTransformStyleOnSortableContext(transform, transition)}
-				className={`flex justify-between items-center gap-2 p-2 bg-white rounded-md border border-muted ${
+				className={`flex justify-between items-center gap-2 p-2 w-full bg-white rounded-md border border-muted ${
 					isDragging ? 'opacity-85 border-2 border-dashed' : 'opacity-100'
 				} sm:cursor-pointer`}>
 				<div className="flex items-center gap-2">
@@ -40,12 +40,9 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 							<ChevronRight className={`${filePage?.isOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</Button>
 					</div>
-					<span className="inline-block truncate max-w-[150px] font-medium">{file.file.name}</span>
-					<Badge className="bg-gradient-blue-100-ro text-white">
-						<File />
-						{file.pages.length}
-					</Badge>
+					<span className="font-medium break-keep">{file.file.name}</span>
 				</div>
+
 				<Button type="button" size="icon-sm" variant="ghost" onClick={() => deleteFileWithUndo(file.id)}>
 					<X />
 					<span className="sr-only">Delete file</span>
