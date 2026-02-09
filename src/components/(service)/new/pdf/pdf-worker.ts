@@ -1,5 +1,5 @@
 import { FileWithPath } from 'react-dropzone';
-import { PDFDocument } from 'pdf-lib';
+import { degrees, PDFDocument } from 'pdf-lib';
 import { toArray, chunk, pipe } from '@fxts/core';
 import { Merge } from '@/hooks';
 import { PDF_HQ } from '@/constants';
@@ -87,6 +87,21 @@ const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise
 	}
 };
 
+const rotatePdfPage = async (
+	file: File,
+	pageIndex: number, // 0-based
+	rotation: number, // 90, 180, 270
+): Promise<Uint8Array> => {
+	const arrayBuffer = await file.arrayBuffer();
+	const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+	const page = pdfDoc.getPage(pageIndex);
+	page.setRotation(degrees(rotation));
+
+	const pdfBytes = await pdfDoc.save();
+	return pdfBytes;
+};
+
 const deletePageFromFiles = (files: ProcessedFileList, pageId: PageItem['id']): ProcessedFileList => {
 	// pageId: `${fileId}-page-${fileIndex}`
 	const fileId = pageId.split('-page-')[0];
@@ -172,7 +187,7 @@ const downloadMergedFile = ({ downloadUrl, fileName }: { downloadUrl?: string; f
 	a.remove();
 };
 
-// URL 정리 (컴포넌트 unmount 시 호출)
+// when component get unmounted
 const cleanupDownloadUrl = (downloadUrl: string) => {
 	URL.revokeObjectURL(downloadUrl);
 };
@@ -183,6 +198,7 @@ export {
 	getTotalPageCount,
 	deletePageFromFiles,
 	getProcessedFileListWithCountedPages,
+	rotatePdfPage,
 	createMergedFileBlob,
 	prepareMergedFile,
 	downloadMergedFile,

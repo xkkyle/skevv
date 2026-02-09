@@ -2,11 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import React, { Suspense } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Columns2, Square } from 'lucide-react';
 import { AnimateSpinner, Button, getTotalPageCount } from '@/components';
 import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
 import { screenSize } from '@/constants';
 import { getInitialWidth } from '@/utils/pdf';
+import { useViewMode } from '@/providers/ViewModeContextProvider';
 
 const PdfPreview = dynamic(() => import('../pdf/PdfPreview'), {
 	ssr: false,
@@ -23,6 +24,7 @@ function FullContainerLoading() {
 
 export default function FilePreviewListPanel() {
 	const { files } = useDropzoneFiles();
+	const { viewMode, setViewMode } = useViewMode();
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
 	const { containerRef, containerWidth } = useResizableObserver<HTMLDivElement>({
@@ -37,20 +39,41 @@ export default function FilePreviewListPanel() {
 					<Button
 						type="button"
 						size="icon-sm"
+						variant={viewMode === 'single' ? 'default' : 'ghost'}
+						onClick={() => setViewMode('single')}
+						title="Single page view">
+						<Square size={18} />
+					</Button>
+					<Button
+						type="button"
+						size="icon-sm"
+						variant={viewMode === 'dual' ? 'default' : 'ghost'}
+						onClick={() => setViewMode('dual')}
+						title="Dual page view">
+						<Columns2 size={18} />
+					</Button>
+
+					<div className="w-px h-6 bg-muted" />
+
+					<Button
+						type="button"
+						size="icon-sm"
 						variant="ghost"
+						title="Scroll to the top of container"
 						onClick={() => {
 							containerRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 						}}>
-						<ArrowUp />
+						<ArrowUp size={18} />
 					</Button>
 					<Button
 						type="button"
 						size="icon-sm"
 						variant="ghost"
+						title="Scroll to the bottom of container"
 						onClick={() => {
 							containerRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
 						}}>
-						<ArrowDown />
+						<ArrowDown size={18} />
 					</Button>
 				</div>
 			</div>

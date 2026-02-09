@@ -20,7 +20,6 @@ import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useLoading, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
-import { CircleAlert } from 'lucide-react';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;
@@ -51,7 +50,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 
 	const pageCount = getTotalPageCount(files);
 
-	const isOneFile = files.length < 2;
+	// const isOneFile = files.length < 2;
 	//TODO: less than 50 -> Free Plan
 	// over 50 -> Lite Plan
 	// until 1000 -> Pro Plan
@@ -74,15 +73,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 			<DialogContent className="w-[90dvw] max-w-[500px]" onOpenAutoFocus={e => e.preventDefault()}>
 				<DialogHeader>
 					<DialogTitle className="text-xl">{title}</DialogTitle>
-					{isOneFile ? (
-						<Callout
-							message={'At least 2 files to merge. Merge more files with the Pro plan'}
-							icon={<CircleAlert size={18} />}
-							className="text-start"
-						/>
-					) : (
-						<DialogDescription className="text-sm text-gray-500 font-medium">{description}</DialogDescription>
-					)}
+					<DialogDescription className="text-sm text-gray-500 font-medium">{description}</DialogDescription>
 				</DialogHeader>
 				<FileMergeAndDownload
 					files={files}
@@ -100,12 +91,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								Cancel
 							</Button>
 						</DialogClose>
-						<FileMergeButton
-							isLoading={isLoading}
-							Loading={<Loading />}
-							mergeFormId={mergeFormId}
-							disabled={currentStep !== 'merge' || isOneFile}
-						/>
+						<FileMergeButton isLoading={isLoading} Loading={<Loading />} mergeFormId={mergeFormId} disabled={currentStep !== 'merge'} />
 					</DialogFooter>
 				)}
 			</DialogContent>

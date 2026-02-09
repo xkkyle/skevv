@@ -16,6 +16,8 @@ import {
 import { useDropzoneFiles, useMediaQuery } from '@/hooks';
 import { getTransformStyleOnSortableContext } from '@/utils/dndSortable';
 import { screenSize } from '@/constants';
+import { cn } from '@/lib/utils';
+import { usePreviewScroll } from '@/providers';
 
 interface SortableFilePageProps {
 	page: PageItem;
@@ -43,7 +45,9 @@ function TriggerButton({ onClick, ...props }: { onClick: React.MouseEventHandler
 }
 
 export default function SortableFilePage({ page, onOpenPreview }: SortableFilePageProps) {
-	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+	const { scrollToPage } = usePreviewScroll();
+
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: page.id,
 		animateLayoutChanges: () => false,
 	});
@@ -88,12 +92,22 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 		});
 	};
 
+	const handlePageClick = (e: React.MouseEvent) => {
+		if ((e.target as HTMLElement).closest('button')) return;
+
+		scrollToPage(page.id);
+	};
+
 	return (
 		<div
 			ref={setNodeRef}
 			{...attributes}
 			style={getTransformStyleOnSortableContext(transform, transition)}
-			className="flex justify-between items-center gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer">
+			onClick={handlePageClick}
+			className={cn(
+				'flex justify-between items-center gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer focus:border-gray-300 transition-colors',
+				isDragging ? 'opacity-85 border-2 border-dashed bg-gray-50' : 'opacity-100',
+			)}>
 			<div className="ui-flex-center gap-2">
 				<Button
 					type="button"

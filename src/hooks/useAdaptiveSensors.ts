@@ -11,7 +11,7 @@ export default function useAdaptiveSensors() {
 		const update = () => setTouchPrimary(isTouchPrimary());
 		update();
 
-		// 입력 방식 변화(iPad에 트랙패드 연결/해제 등)에 대응
+		// ipad OS (touch utils)
 		const pointerMediaQuery = window.matchMedia('(pointer: coarse)');
 		const hoverMediaQuery = window.matchMedia('(hover: none)');
 
@@ -33,7 +33,7 @@ export default function useAdaptiveSensors() {
 
 	const pointerSensors = useSensors(
 		useSensor(PointerSensor, {
-			activationConstraint: { distance: 6 },
+			activationConstraint: { distance: 4 },
 		}),
 		useSensor(KeyboardSensor),
 	);
