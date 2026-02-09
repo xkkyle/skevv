@@ -75,7 +75,6 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	}, [containerWidth, pageHeights]);
 
 	const getEstimateHeightSize = (groupIndex: number) => {
-		console.log(groupIndex);
 		// single row height
 		if (viewMode === 'single') {
 			return pageHeights[groupIndex] || getInitialEstimateHeight;
@@ -90,7 +89,6 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 			return pageHeights[pageIndex] || getInitialEstimateHeight;
 		});
 
-		console.log(heights);
 		return Math.max(...heights);
 	};
 

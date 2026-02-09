@@ -93,12 +93,12 @@ const rotatePdfPage = async (
 	rotation: number, // 90, 180, 270
 ): Promise<Uint8Array> => {
 	const arrayBuffer = await file.arrayBuffer();
-	const pdfDoc = await PDFDocument.load(arrayBuffer);
+	const pdf = await PDFDocument.load(arrayBuffer);
 
-	const page = pdfDoc.getPage(pageIndex);
+	const page = pdf.getPage(pageIndex);
 	page.setRotation(degrees(rotation));
 
-	const pdfBytes = await pdfDoc.save();
+	const pdfBytes = await pdf.save();
 	return pdfBytes;
 };
 

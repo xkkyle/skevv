@@ -2,16 +2,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ProcessedFileItem } from '@/components';
 
-type SetFilesArg = ProcessedFileItem[] | ((prev: ProcessedFileItem[]) => ProcessedFileItem[]);
+type SetFilesArgument = ProcessedFileItem[] | ((prev: ProcessedFileItem[]) => ProcessedFileItem[]);
 type SetProcessedFiles = (files: ProcessedFileItem[]) => void;
 
 interface FileStore {
 	files: ProcessedFileItem[];
-	setFiles: (argument: SetFilesArg) => void;
+	setFiles: (argument: SetFilesArgument) => void;
 	resetFiles: () => void;
 }
 
-const sanitizeFiles = (files: ProcessedFileItem[]) => files.filter(file => (file.pageCount ?? 0) > 0);
+const sanitizeFiles = (files: ProcessedFileItem[]) => files.filter(({ pageCount }) => (pageCount ?? 0) > 0);
 
 const useFileStore = create(
 	persist<FileStore>(
