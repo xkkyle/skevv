@@ -302,8 +302,12 @@
 		@apply bg-radial-[at_50%_75%] from-gray-200 via-gray-400 to-gray-100 to-90%;
 	}
 
+	.bg-gradient-indigo-gray-50 {
+		@apply bg-radial-[at_50%_75%] from-gray-100 via-gray-300 to-indigo-100;
+	}
+
 	.bg-gradient-indigo-gray-100 {
-		@apply bg-radial-[at_25%_90%] from-gray-200 via-gray-400 to-indigo-100;
+		@apply bg-radial-[at_50%_75%] from-gray-200 via-gray-400 to-indigo-100;
 	}
 
 	.bg-gradient-indigo-gray-200 {

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/incompatible-library */
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -8,8 +7,8 @@ import { FileWithPath } from 'react-dropzone';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { type PageItem, PdfDocumentErrorMessage, PdfPreviewSkeleton } from '@/components';
 import { useDebouncedEffect } from '@/hooks';
-import { DEFAULT_A4_RATIO } from '@/constants';
 import { useViewMode } from '@/providers';
+import { DEFAULT_A4_RATIO } from '@/constants';
 
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -47,6 +46,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 	const pdfDocumentProxyRef = React.useRef<PDFDocumentProxy | null>(null);
 	const viewportRatioCache = React.useRef<number[]>([]);
+	const abortControllerRef = React.useRef<AbortController | null>(null);
 
 	const [pageHeights, setPageHeights] = React.useState<number[]>([]);
 	const [isLoaded, setLoaded] = React.useState(false);
@@ -116,12 +116,30 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		effectTriggers: [containerWidth, viewMode],
 	});
 
-	const calculateHeights = async (pdf: PDFDocumentProxy, containerWidth: number) => {
+	React.useEffect(() => {
+		return () => {
+			// component unmount -> cancel calculate
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+
+			// PDF doc cleanup
+			if (pdfDocumentProxyRef.current) {
+				pdfDocumentProxyRef.current.cleanup();
+			}
+		};
+	}, []);
+
+	const calculateHeights = async (pdf: PDFDocumentProxy, containerWidth: number, signal?: AbortSignal) => {
 		const width = viewMode === 'dual' ? (containerWidth - PADDING) / 2 : containerWidth;
 		const heights: number[] = [];
 
 		try {
 			for (let i = 0; i < pdf.numPages; i++) {
+				if (signal?.aborted) {
+					throw new Error('Calculation aborted');
+				}
+
 				if (viewportRatioCache.current[i]) {
 					heights.push(viewportRatioCache.current[i] * width + PADDING);
 				} else {
@@ -135,28 +153,45 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 					viewportRatioCache.current[i] = ratio;
 					heights.push(ratio * width + PADDING);
+
+					// page cleanup
+					page.cleanup();
 				}
 			}
 
 			return heights;
 		} catch (e) {
+			if (e instanceof Error && e.message === 'Calculation aborted') {
+				return undefined;
+			}
+
 			console.error(e);
 		}
 	};
 
 	const recalculateHeights = async () => {
 		const pdf = pdfDocumentProxyRef.current;
-
 		if (!pdf) return;
+
+		// cancel previous calculation
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+		}
+
+		const abortController = new AbortController();
+		abortControllerRef.current = abortController;
 
 		try {
 			const heights = await calculateHeights(pdf, containerWidth);
 
-			if (heights) {
+			// abort되지 않았고 결과가 있으면 업데이트
+			if (!abortController.signal.aborted && heights) {
 				setPageHeights(heights);
 			}
 		} catch (e) {
-			console.error(e);
+			if (!abortController.signal.aborted) {
+				console.error('Error recalculating heights:', e);
+			}
 		}
 	};
 

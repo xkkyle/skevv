@@ -145,11 +145,7 @@ export default function FileListPanel() {
 							<MotionBlock
 								className={cn(
 									`relative flex-1 mx-auto my-1 w-[calc(100%-8px)] rounded-2xl outline outline-dashed outline-offset-2 outline-gray-300 transition-colors sm:block sm:h-full`,
-									isLoading
-										? 'bg-gradient-indigo-gray-100'
-										: isDragActive && isDragAccept
-											? 'bg-gradient-gray-200'
-											: 'bg-gradient-gray-100',
+									loading ? 'bg-gradient-indigo-gray-50' : accepting ? 'bg-gradient-gray-100' : 'bg-gradient-gray-100',
 								)}>
 								<Input
 									type="file"

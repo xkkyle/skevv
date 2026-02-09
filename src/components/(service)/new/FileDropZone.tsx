@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CirclePlus, FileUp } from 'lucide-react';
+import { CirclePlus, FileUp, Lock } from 'lucide-react';
 import { MotionBlock, Button, Input, AnimateSpinner } from '@/components';
 import { useDropzoneFiles } from '@/hooks';
 
@@ -34,16 +34,21 @@ export default function FileDropZone() {
 				/>
 				<label
 					htmlFor={`file-dropzone-${fileInputId}`}
-					className="ui-flex-center gap-2 p-4 w-full h-full text-[15px] text-white font-bold cursor-pointer lg:p-36 lg:text-base">
-					{isLoading ? <AnimateSpinner size={16} /> : <FileUp size={24} />}
-					<span>
-						{isLoading
-							? 'Processing your files...'
-							: isDragActive && isDragAccept
-								? 'Drop your files here 😊'
-								: isDragActive && isDragReject
-									? 'Only PDF Files accepted'
-									: 'Drag and Drop Your PDFs'}
+					className="ui-flex-center flex-col gap-2 p-4 w-full h-full text-[15px] text-white font-bold cursor-pointer lg:p-36 lg:text-base">
+					<div className="ui-flex-center gap-2">
+						{isLoading ? <AnimateSpinner size={16} /> : <FileUp size={24} />}
+						<span>
+							{isLoading
+								? 'Processing your files...'
+								: isDragActive && isDragAccept
+									? 'Drop your files here 😊'
+									: isDragActive && isDragReject
+										? 'Only PDF Files accepted'
+										: 'Drag and Drop Your PDFs'}
+						</span>
+					</div>
+					<span className="inline-flex items-center gap-2 px-2 py-1.5 text-xs bg-blue-400 text-white rounded-lg">
+						<Lock size={14} /> No tracking & Saving
 					</span>
 				</label>
 			</MotionBlock>

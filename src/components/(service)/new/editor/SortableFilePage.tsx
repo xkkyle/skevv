@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { EllipsisVertical, GripVertical, SquareMousePointer, Trash } from 'lucide-react';
+import { CopyPlus, EllipsisVertical, GripVertical, SquareMousePointer, Trash } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSortable } from '@dnd-kit/sortable';
 import {
@@ -9,6 +9,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 	type PageItem,
 	deletePageFromFiles,
@@ -52,6 +53,7 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 		animateLayoutChanges: () => false,
 	});
 	const { files, setFiles } = useDropzoneFiles();
+	const isSMDown = useMediaQuery(screenSize.MAX_SM);
 
 	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
 		const idx = pageId.indexOf('-page-');
@@ -95,6 +97,8 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 	const handlePageClick = (e: React.MouseEvent) => {
 		if ((e.target as HTMLElement).closest('button')) return;
 
+		if (isSMDown) return;
+
 		scrollToPage(page.id);
 	};
 
@@ -105,7 +109,7 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 			style={getTransformStyleOnSortableContext(transform, transition)}
 			onClick={handlePageClick}
 			className={cn(
-				'flex justify-between items-center gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer focus:border-gray-300 transition-colors',
+				'flex justify-between items-center gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer sm:focus:border-gray-300 transition-colors',
 				isDragging ? 'opacity-85 border-2 border-dashed bg-gray-50' : 'opacity-100',
 			)}>
 			<div className="ui-flex-center gap-2">
@@ -138,7 +142,14 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 							<EllipsisVertical />
 						</Button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent>
+					<DropdownMenuContent className="mr-1">
+						<DropdownMenuItem className="cursor-pointer">
+							<Button type="button" variant="ghost" size="sm">
+								<CopyPlus className="text-gray-700" />
+								Duplicate
+							</Button>
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
 						<DropdownMenuItem className="cursor-pointer">
 							<Button
 								type="button"
