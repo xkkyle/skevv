@@ -40,7 +40,7 @@ export default function SortableFile({ file, filePage, toggleFilePages, deleteFi
 							<ChevronRight className={`${filePage?.isOpen ? 'rotate-90' : 'rotate-0'}`} />
 						</Button>
 					</div>
-					<span className="max-w-[185px] min-w-0 font-medium break-keep">{file.file.name}</span>
+					<span className="max-w-[185px] min-w-0 font-medium break-all sm:break-keep">{file.file.name}</span>
 				</div>
 
 				<Button type="button" size="icon-sm" variant="ghost" onClick={() => deleteFileWithUndo(file.id)}>
