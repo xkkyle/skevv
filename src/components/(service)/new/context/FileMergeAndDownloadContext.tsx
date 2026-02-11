@@ -98,14 +98,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 				/>
 				{isLoading && <Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />}
 				{currentStep === 'merge' && isLoading && (
-					<Button
-						type="button"
-						variant="outline"
-						onClick={() => {
-							if (isLoading && abortRef.current) {
-								abortRef.current();
-							}
-						}}>
+					<Button type="button" variant="outline" onClick={stopMerge}>
 						<CirclePause />
 						Stop Merging
 					</Button>
@@ -113,11 +106,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 
 				{currentStep === 'merge' && (
 					<DialogFooter className="pt-3 border-t border-muted">
-						<DialogClose
-							asChild
-							onClick={() => {
-								stopMerge();
-							}}>
+						<DialogClose asChild onClick={stopMerge}>
 							<Button type="button" variant="outline">
 								Cancel
 							</Button>
