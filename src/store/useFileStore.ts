@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 import { ProcessedFileItem } from '@/components';
 
 type SetFilesArgument = ProcessedFileItem[] | ((prev: ProcessedFileItem[]) => ProcessedFileItem[]);
-type SetProcessedFiles = (files: ProcessedFileItem[]) => void;
 
 interface FileStore {
 	files: ProcessedFileItem[];
@@ -35,5 +34,4 @@ const useFileStore = create(
 	),
 );
 
-export type { SetProcessedFiles };
 export { useFileStore };

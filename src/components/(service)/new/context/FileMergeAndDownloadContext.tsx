@@ -20,6 +20,7 @@ import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useLoading, useMediaQuery } from '@/hooks';
 import { screenSize } from '@/constants';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
+import { CirclePause } from 'lucide-react';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;
@@ -44,6 +45,7 @@ function TriggerButton({ pageCount, isSMDown, disabled = false, ...props }: { pa
 export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: FileMergeAndDownloadContextProps) {
 	const currentStep = useMergeFlowStore(({ step }) => step);
 	const mergeFormId = React.useId();
+	const abortRef = React.useRef<() => void | null>(null);
 
 	const { Loading, isLoading, startTransition } = useLoading();
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
@@ -51,7 +53,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const pageCount = getTotalPageCount(files);
 
 	// const isOneFile = files.length < 2;
-	//TODO: less than 50 -> Free Plan
+	// TODO: less than 50 -> Free Plan
 	// over 50 -> Lite Plan
 	// until 1000 -> Pro Plan
 
@@ -61,12 +63,22 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 			? `⚡️ Type file name first. ${isSMDown ? 'Press' : 'Click'} merge when you're done, then.`
 			: `✅ Your PDF is ready to download`;
 
-	const onClose = () => {
-		toggle(false);
+	const stopMerge = () => {
+		// if merge is in progress, then abort;
+		if (isLoading && abortRef.current) {
+			abortRef.current();
+		}
 	};
 
+	const onClose = () => toggle(false);
+
 	return (
-		<Dialog open={isOpen} onOpenChange={toggle}>
+		<Dialog
+			open={isOpen}
+			onOpenChange={open => {
+				toggle(open);
+				if (!open) stopMerge();
+			}}>
 			<DialogTrigger asChild>
 				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
 			</DialogTrigger>
@@ -77,16 +89,35 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 				</DialogHeader>
 				<FileMergeAndDownload
 					files={files}
+					isOpen={isOpen}
 					pageCount={pageCount}
 					mergeFormId={mergeFormId}
-					isOpen={isOpen}
+					abortRef={abortRef}
 					startTransition={startTransition}
 					onClose={onClose}
 				/>
 				{isLoading && <Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />}
+				{currentStep === 'merge' && isLoading && (
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => {
+							if (isLoading && abortRef.current) {
+								abortRef.current();
+							}
+						}}>
+						<CirclePause />
+						Stop Merging
+					</Button>
+				)}
+
 				{currentStep === 'merge' && (
 					<DialogFooter className="pt-3 border-t border-muted">
-						<DialogClose asChild>
+						<DialogClose
+							asChild
+							onClick={() => {
+								stopMerge();
+							}}>
 							<Button type="button" variant="outline">
 								Cancel
 							</Button>

@@ -6,7 +6,9 @@ import { PDF_HQ } from '@/constants';
 
 interface PageItem {
 	id: `${string}-page-${number}`;
+	sourcePageNumber: number;
 	order: number;
+	rotation: number;
 }
 
 interface RawFileItem {
@@ -75,7 +77,12 @@ const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise
 		return files.map((file, fileIndex) => ({
 			...file,
 			pageCount: pageCounts[fileIndex],
-			pages: Array.from({ length: pageCounts[fileIndex] }, (_, idx) => ({ id: `${file.id}-page-${idx + 1}`, order: idx + 1 })),
+			pages: Array.from({ length: pageCounts[fileIndex] }, (_, idx) => ({
+				id: `${file.id}-page-${idx + 1}`,
+				sourcePageNumber: idx + 1,
+				order: idx + 1,
+				rotation: 0,
+			})),
 		}));
 	} catch (error) {
 		console.error('Something happened wrong to get page count');
@@ -125,7 +132,7 @@ const deletePageFromFiles = (files: ProcessedFileList, pageId: PageItem['id']): 
 const createMergedFileBlob = async ({ processedFiles, merge }: { processedFiles: ProcessedFileList; merge: Merge }) => {
 	try {
 		const buffers: ArrayBuffer[] = [];
-
+		console.log(processedFiles);
 		const batchFiles = pipe(processedFiles, chunk(2), toArray);
 
 		for (const batchFile of batchFiles) {
@@ -138,7 +145,9 @@ const createMergedFileBlob = async ({ processedFiles, merge }: { processedFiles:
 
 		return new Blob([mergedBytesBuffer], { type: PDF_HQ.KEY });
 	} catch (error) {
+		console.error(error);
 		if (error instanceof Error) throw error;
+
 		throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
 	}
 };
@@ -165,6 +174,7 @@ const prepareMergedFile = async ({
 		};
 	} catch (error) {
 		if (error instanceof Error) throw error;
+		console.error(error);
 		throw new Error(ASYNC_PDF_MESSAGE.MERGE.ERROR.DURING_SAVE);
 	}
 };

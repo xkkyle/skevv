@@ -31,13 +31,22 @@ interface FileNameSetterFormProps {
 	isOpen: boolean;
 	pageCount: number;
 	mergeFormId: string;
+	abortRef: React.MutableRefObject<(() => void) | null>;
 	startTransition: <T>(promise: Promise<T>) => Promise<T>;
 	onClose: () => void;
 }
 
 const DEFAULT_FILE_NAME = 'new';
 
-export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFormId, startTransition, onClose }: FileNameSetterFormProps) {
+export default function FileMergeAndDownload({
+	files,
+	isOpen,
+	pageCount,
+	mergeFormId,
+	abortRef,
+	startTransition,
+	onClose,
+}: FileNameSetterFormProps) {
 	const form = useForm<FileNameSchema>({
 		resolver: zodResolver(fileNameSchema),
 		defaultValues: {
@@ -45,7 +54,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 		},
 	});
 
-	const { merge } = usePdfWorker();
+	const { merge, abort } = usePdfWorker();
 	const { onReset } = useDropzoneFiles();
 
 	const step = useMergeFlowStore(({ step }) => step);
@@ -55,7 +64,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 	const reset = useMergeFlowStore(({ reset }) => reset);
 
 	const filesKey = React.useMemo(
-		() => files.map(processedFile => `${processedFile.id}-${processedFile.file.size}-${processedFile.pages.length}`).join('|'),
+		() => files.map(({ id, file, pages }) => `${id}-${file.size}-${pages.length}-${pages.map(page => page.rotation).join('|')}`).join('|'),
 		[files],
 	);
 
@@ -70,12 +79,20 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 		}
 	}, [isOpen, step, mergedResult?.filesKey, filesKey, reset]);
 
-	const onSubmit = async () => {
+	React.useEffect(() => {
+		abortRef.current = abort;
+
+		return () => {
+			abortRef.current = null;
+		};
+	}, [abort, abortRef]);
+
+	const onSubmit = async (values: FileNameSchema) => {
 		if (files?.length === 0) return;
 
 		try {
 			const { success, message, downloadUrl, fileName, fileSize } = await startTransition(
-				prepareMergedFile({ files, merge, mergedFileName: form.getValues('fileName') }),
+				prepareMergedFile({ files, merge, mergedFileName: values.fileName }),
 			);
 
 			if (success && downloadUrl) {
@@ -111,7 +128,7 @@ export default function FileMergeAndDownload({ files, isOpen, pageCount, mergeFo
 		<div className="flex flex-col gap-3">
 			{step === 'merge' && (
 				<Form {...form}>
-					<form id={mergeFormId} onSubmit={form.handleSubmit(onSubmit)}>
+					<form id={mergeFormId} className="pt-3" onSubmit={form.handleSubmit(onSubmit)}>
 						<FormField
 							control={form.control}
 							name="fileName"

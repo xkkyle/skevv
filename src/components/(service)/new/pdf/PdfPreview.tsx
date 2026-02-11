@@ -45,7 +45,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	const { viewMode } = useViewMode();
 
 	const pdfDocumentProxyRef = React.useRef<PDFDocumentProxy | null>(null);
-	const viewportRatioCache = React.useRef<number[]>([]);
+	const viewportRatioCache = React.useRef<Map<string, number>>(new Map());
 	const abortControllerRef = React.useRef<AbortController | null>(null);
 
 	const [pageHeights, setPageHeights] = React.useState<number[]>([]);
@@ -113,45 +113,55 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 			recalculateHeights();
 		},
-		effectTriggers: [containerWidth, viewMode],
+		effectTriggers: [containerWidth, viewMode, pages],
 	});
 
 	React.useEffect(() => {
+		const abortController = abortControllerRef.current;
+		const pdfDocumentProxy = pdfDocumentProxyRef.current;
+
 		return () => {
 			// component unmount -> cancel calculate
-			if (abortControllerRef.current) {
-				abortControllerRef.current.abort();
+			if (abortController) {
+				abortController.abort();
 			}
 
 			// PDF doc cleanup
-			if (pdfDocumentProxyRef.current) {
-				pdfDocumentProxyRef.current.cleanup();
+			if (pdfDocumentProxy) {
+				pdfDocumentProxy.cleanup();
 			}
 		};
 	}, []);
+
+	React.useEffect(() => {
+		viewportRatioCache.current.clear();
+	}, [file]);
 
 	const calculateHeights = async (pdf: PDFDocumentProxy, containerWidth: number, signal?: AbortSignal) => {
 		const width = viewMode === 'dual' ? (containerWidth - PADDING) / 2 : containerWidth;
 		const heights: number[] = [];
 
 		try {
-			for (let i = 0; i < pdf.numPages; i++) {
+			for (let idx = 0; idx < sortedPages.length; idx++) {
 				if (signal?.aborted) {
 					throw new Error('Calculation aborted');
 				}
 
-				if (viewportRatioCache.current[i]) {
-					heights.push(viewportRatioCache.current[i] * width + PADDING);
+				const pageItem = sortedPages[idx];
+				const cacheKey = `${pageItem.sourcePageNumber}-${pageItem.rotation}`;
+
+				if (viewportRatioCache.current?.has(cacheKey)) {
+					const ratio = viewportRatioCache.current.get(cacheKey)!;
+					heights.push(ratio * width + PADDING);
 				} else {
-					const page = await pdf.getPage(i + 1);
-					const viewport = page.getViewport({ scale: 1 });
+					const page = await pdf.getPage(pageItem.sourcePageNumber);
+					const viewport = page.getViewport({ scale: 1, rotation: pageItem.rotation || 0 });
 
 					// landscape or portrait PDF -> width + padding
 					// 	1. width > height
 					// 	2. height > width
 					const ratio = viewport.height / viewport.width;
-
-					viewportRatioCache.current[i] = ratio;
+					viewportRatioCache.current.set(cacheKey, ratio);
 					heights.push(ratio * width + PADDING);
 
 					// page cleanup
@@ -244,23 +254,19 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 										height: `${virtualRow.size}px`,
 										transform: `translateY(${virtualRow.start}px)`,
 									}}>
-									{group.map(page => {
-										const pageNumber = +page.id.split('-page-')[1];
-
-										return (
-											<VirtualPage
-												key={page.id}
-												style={{
-													width: pageWidth,
-													height: '100%',
-												}}
-												page={page}
-												pageNumber={pageNumber}
-												startPageNumber={startPageNumber}
-												containerWidth={pageWidth}
-											/>
-										);
-									})}
+									{group.map(page => (
+										<VirtualPage
+											key={page.id}
+											style={{
+												width: pageWidth,
+												height: '100%',
+											}}
+											page={page}
+											pageNumber={page.sourcePageNumber}
+											startPageNumber={startPageNumber}
+											containerWidth={pageWidth}
+										/>
+									))}
 								</div>
 							);
 						})}

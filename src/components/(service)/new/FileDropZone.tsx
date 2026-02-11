@@ -47,7 +47,7 @@ export default function FileDropZone() {
 										: 'Drag and Drop Your PDFs'}
 						</span>
 					</div>
-					<span className="inline-flex items-center gap-2 px-2 py-1.5 text-xs bg-blue-400 text-white rounded-lg">
+					<span className="inline-flex items-center gap-2 px-2 py-1.5 text-xs text-blue-400 bg-white rounded-lg">
 						<Lock size={14} /> No tracking & Saving
 					</span>
 				</label>

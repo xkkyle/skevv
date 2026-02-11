@@ -52,8 +52,46 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 		id: page.id,
 		animateLayoutChanges: () => false,
 	});
+
 	const { files, setFiles } = useDropzoneFiles();
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+
+	const handlePageClick = (e: React.MouseEvent) => {
+		if ((e.target as HTMLElement).closest('button')) return;
+
+		if (isSMDown) return;
+
+		scrollToPage(page.id);
+	};
+
+	const duplicatePage = ({ pageId }: { pageId: PageItem['id'] }) => {
+		const idx = pageId.indexOf('-page-');
+		const fileId = idx === -1 ? pageId : pageId.slice(0, idx);
+
+		setFiles(prevFiles =>
+			prevFiles.map(file => {
+				if (file.id !== fileId) return file;
+
+				const id = `${fileId}-page-${Date.now()}` as const;
+				const newPage: PageItem = { ...page, id, sourcePageNumber: page.sourcePageNumber, order: page.order + 1 };
+
+				const pageIndex = file.pages.findIndex(p => p.id === page.id);
+				const newPages = [...file.pages];
+				newPages.splice(pageIndex + 1, 0, newPage);
+
+				const updatedPages = newPages.map((page, idx) => ({
+					...page,
+					order: idx + 1,
+				}));
+
+				return {
+					...file,
+					pages: updatedPages,
+					pageCount: updatedPages.length,
+				};
+			}),
+		);
+	};
 
 	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
 		const idx = pageId.indexOf('-page-');
@@ -69,6 +107,8 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 		// 1) Remove
 		setFiles(files => deletePageFromFiles(files, pageId));
 
+		if (files.find(file => file.id === fileId)?.pages.length === 1) return;
+
 		// 2) Undo
 		toast('Removed page', {
 			description: `${targetFile.file.name} - Page ${removed.order}`,
@@ -83,23 +123,15 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 							const next = [...file.pages];
 							next.splice(Math.max(0, removedIndex), 0, removed);
 
-							const normalized = next.sort((prev, curr) => prev.order - curr.order).map((page, idx) => ({ ...page, order: idx + 1 }));
+							const updatedPages = next.sort((prev, curr) => prev.order - curr.order).map((page, idx) => ({ ...page, order: idx + 1 }));
 
-							return { ...file, pages: normalized, pageCount: normalized.length };
+							return { ...file, pages: updatedPages, pageCount: updatedPages.length };
 						}),
 					);
 				},
 			},
 			duration: 4000,
 		});
-	};
-
-	const handlePageClick = (e: React.MouseEvent) => {
-		if ((e.target as HTMLElement).closest('button')) return;
-
-		if (isSMDown) return;
-
-		scrollToPage(page.id);
 	};
 
 	return (
@@ -132,7 +164,7 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 					onClick={e => {
 						e.preventDefault();
 						e.stopPropagation();
-						onOpenPreview(page.id); // ✅ 여기서만 오픈
+						onOpenPreview(page.id);
 					}}
 				/>
 
@@ -144,7 +176,7 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="mr-1">
 						<DropdownMenuItem className="cursor-pointer">
-							<Button type="button" variant="ghost" size="sm">
+							<Button type="button" variant="ghost" size="sm" onClick={() => duplicatePage({ pageId: page.id })}>
 								<CopyPlus className="text-gray-700" />
 								Duplicate
 							</Button>
