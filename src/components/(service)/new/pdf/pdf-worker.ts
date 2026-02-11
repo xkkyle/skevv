@@ -132,7 +132,7 @@ const deletePageFromFiles = (files: ProcessedFileList, pageId: PageItem['id']): 
 const createMergedFileBlob = async ({ processedFiles, merge }: { processedFiles: ProcessedFileList; merge: Merge }) => {
 	try {
 		const buffers: ArrayBuffer[] = [];
-		console.log(processedFiles);
+
 		const batchFiles = pipe(processedFiles, chunk(2), toArray);
 
 		for (const batchFile of batchFiles) {
