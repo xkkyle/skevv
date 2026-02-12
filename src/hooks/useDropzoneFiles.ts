@@ -24,43 +24,55 @@ export default function useDropzoneFiles() {
 
 	//TODO: Additional Validation for file thumbnail
 	const onDrop = async (acceptedFiles: FileWithPath[], rejections: FileRejection[], event: DropEvent) => {
+		const willUpdateFiles: RawFileItem[] = acceptedFiles.map(file => ({
+			id: `${file.name}-${crypto.randomUUID()}`,
+			file,
+		}));
+
 		let inputIdValue: string | undefined;
+		if (isDragEvent(event)) {
+			inputIdValue = (event.target as HTMLElement & { dataset: { inputId?: string } }).dataset.inputId;
+		}
 
-		const willUpdateFiles: RawFileItem[] = acceptedFiles
-			.map(file => ({
-				id: `${file.name}-${crypto.randomUUID()}`,
-				file,
-			}))
-			.sort((prev, curr) => prev.file.name.localeCompare(curr.file.name, undefined, { numeric: true, sensitivity: 'base' }));
+		const sortByFileName = (prev: RawFileItem, curr: RawFileItem) =>
+			prev.file.name.localeCompare(curr.file.name, undefined, { numeric: true, sensitivity: 'base' });
 
-		const fileList = hasFiles ? [...files, ...willUpdateFiles] : willUpdateFiles;
+		const fileList =
+			!hasFiles || inputIdValue === inputId.OUTER
+				? [...(hasFiles ? files : []), ...willUpdateFiles].sort(sortByFileName)
+				: [...files, ...willUpdateFiles.sort(sortByFileName)];
+
+		setIsLoading(true);
 
 		try {
 			if (rejections.length) {
 				toast.warning(`Uploaded ${rejections.length} files are not PDF type`);
 			}
 
-			setIsLoading(true);
-
 			const asyncFiles = await toast
 				.promise(getProcessedFileListWithCountedPages(fileList), {
-					loading: 'Loading all your files...',
+					loading: 'Processing all your files...',
 					success: `Successfully upload your files ${rejections.length ? `without ${rejections.length} file` : ''}`,
 					error: 'Error happened to add files',
 				})
 				.unwrap();
 
-			if (isDragEvent(event)) {
-				inputIdValue = (event.target as HTMLElement & { dataset: { inputId?: string } }).dataset.inputId;
-			}
-
-			if (inputIdValue === inputId.OUTER) {
-				setFiles(asyncFiles);
-			} else {
-				setFiles(asyncFiles);
-			}
+			setFiles(asyncFiles);
 		} catch (error) {
 			console.error(error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const onReset = async () => {
+		try {
+			setIsLoading(true);
+			await new Promise(resolve => setTimeout(resolve, 300));
+
+			resetFiles();
+		} catch (e) {
+			console.error(e);
 		} finally {
 			setIsLoading(false);
 		}
@@ -74,5 +86,5 @@ export default function useDropzoneFiles() {
 		onDrop,
 	});
 
-	return { dropzone, hasFiles, files, setFiles, isLoading, onReset: resetFiles };
+	return { dropzone, hasFiles, files, setFiles, isLoading, onReset };
 }

@@ -119,8 +119,6 @@ export default function PagePreviewContext({ files, page, isOpen, toggle }: Page
 		enabled: isOpen,
 	});
 
-	const isReady = containerWidth > 0;
-
 	const file = React.useMemo(() => files.find(file => page.id.includes(file.id))?.file, [files, page.id]);
 
 	const title = `Page ${page.order} Preview`;
@@ -142,7 +140,7 @@ export default function PagePreviewContext({ files, page, isOpen, toggle }: Page
 					</DialogHeader>
 
 					<div ref={containerRef} className="w-full overflow-hidden">
-						{isReady && file ? (
+						{containerWidth > 0 && file ? (
 							<PagePreview file={file} pageNumber={page.sourcePageNumber} containerWidth={containerWidth} rotationAngle={page.rotation} />
 						) : (
 							<PdfDocumentErrorMessage />

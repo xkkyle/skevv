@@ -145,7 +145,7 @@ export default function FileListPanel() {
 							<MotionBlock
 								className={cn(
 									`relative flex-1 mx-auto my-1 w-[calc(100%-8px)] rounded-2xl outline outline-dashed outline-offset-2 outline-gray-300 transition-colors sm:block sm:h-full`,
-									loading ? 'bg-gradient-indigo-gray-50' : accepting ? 'bg-gradient-gray-100' : 'bg-gradient-gray-100',
+									loading ? 'bg-gradient-blue-50' : accepting ? 'bg-gradient-gray-100' : 'bg-gradient-gray-100',
 								)}>
 								<Input
 									type="file"
@@ -162,9 +162,9 @@ export default function FileListPanel() {
 									htmlFor={`file-dropzone-${fileInputId}`}
 									className="ui-flex-center min-h-64 w-full h-full cursor-pointer sm:min-h-100">
 									{loading ? (
-										<div className="inline-flex items-center gap-2">
+										<div className="inline-flex items-center gap-2 text-white">
 											<AnimateSpinner />
-											<span className="text-gray-900 font-medium">Processing...</span>
+											<span className="font-medium">Processing...</span>
 										</div>
 									) : accepting ? (
 										<div className="inline-flex items-center gap-2">

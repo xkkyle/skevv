@@ -1,5 +1,5 @@
-import { cleanupDownloadUrl } from '@/components';
 import { create } from 'zustand';
+import { cleanupDownloadUrl } from '@/components';
 
 type MergeStep = 'merge' | 'download';
 

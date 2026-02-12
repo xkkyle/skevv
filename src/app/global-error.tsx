@@ -1,12 +1,14 @@
 'use client'; // Error components must be Client Components
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Rotate3d } from 'lucide-react';
 import { Button } from '@/components';
 import { route } from '@/constants';
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+	const router = useRouter();
+
 	React.useEffect(() => {
 		console.error(error);
 	}, [error]);
@@ -21,8 +23,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 						<Button onClick={() => reset()} variant="secondary">
 							<Rotate3d size={18} /> 재시도
 						</Button>
-						<Button type="button" asChild>
-							<Link href={route.SERVICE.ROOT}>홈으로 가기</Link>
+						<Button
+							type="button"
+							onClick={() => {
+								router.push(route.SERVICE.ROOT);
+								router.refresh();
+							}}>
+							홈으로 가기
 						</Button>
 					</div>
 				</div>

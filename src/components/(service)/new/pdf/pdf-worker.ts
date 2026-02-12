@@ -1,5 +1,5 @@
 import { FileWithPath } from 'react-dropzone';
-import { degrees, PDFDocument } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import { toArray, chunk, pipe } from '@fxts/core';
 import { Merge } from '@/hooks';
 import { PDF_HQ } from '@/constants';
@@ -92,21 +92,6 @@ const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise
 
 		throw error;
 	}
-};
-
-const rotatePdfPage = async (
-	file: File,
-	pageIndex: number, // 0-based
-	rotation: number, // 90, 180, 270
-): Promise<Uint8Array> => {
-	const arrayBuffer = await file.arrayBuffer();
-	const pdf = await PDFDocument.load(arrayBuffer);
-
-	const page = pdf.getPage(pageIndex);
-	page.setRotation(degrees(rotation));
-
-	const pdfBytes = await pdf.save();
-	return pdfBytes;
 };
 
 const deletePageFromFiles = (files: ProcessedFileList, pageId: PageItem['id']): ProcessedFileList => {
@@ -208,7 +193,6 @@ export {
 	getTotalPageCount,
 	deletePageFromFiles,
 	getProcessedFileListWithCountedPages,
-	rotatePdfPage,
 	createMergedFileBlob,
 	prepareMergedFile,
 	downloadMergedFile,

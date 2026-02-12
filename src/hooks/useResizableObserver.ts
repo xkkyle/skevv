@@ -28,6 +28,7 @@ function useResizableObserver<T extends HTMLElement>({ initialWidth = 300 }: Use
 		if (!containerElement) return;
 
 		const width = containerElement.getBoundingClientRect().width;
+
 		applyWidth(width);
 	}, [applyWidth]);
 

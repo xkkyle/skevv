@@ -27,7 +27,11 @@ export function useResizableObserverInDialog<T extends HTMLElement>({ initialWid
 		const containerElement = containerRef.current;
 		if (!containerElement) return;
 
-		applyWidth(containerElement.getBoundingClientRect().width);
+		const { width } = containerElement.getBoundingClientRect();
+
+		if (width) {
+			applyWidth(width);
+		}
 	}, [enabled]);
 
 	React.useEffect(() => {

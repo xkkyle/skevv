@@ -73,6 +73,7 @@ export default function FileMergeAndDownload({
 
 		if (step === 'download') {
 			const prevKey = mergedResult?.filesKey;
+
 			if (!prevKey || prevKey !== filesKey) {
 				reset();
 			}

@@ -3,27 +3,19 @@
 import dynamic from 'next/dynamic';
 import React, { Suspense } from 'react';
 import { ArrowDown, ArrowUp, Columns2, Square } from 'lucide-react';
-import { AnimateSpinner, Button, getTotalPageCount } from '@/components';
-import { useDropzoneFiles, useMediaQuery, useResizableObserver } from '@/hooks';
-import { screenSize } from '@/constants';
+import { Button, getTotalPageCount, PdfPreviewSkeleton } from '@/components';
+import { useMediaQuery, useResizableObserver } from '@/hooks';
+import { DEFAULT_A4_RATIO, screenSize } from '@/constants';
 import { getInitialWidth } from '@/utils/pdf';
 import { useViewMode } from '@/providers/ViewModeContextProvider';
+import { useFileStore } from '@/store';
 
 const PdfPreview = dynamic(() => import('../pdf/PdfPreview'), {
 	ssr: false,
-	loading: () => <FullContainerLoading />,
 });
 
-function FullContainerLoading() {
-	return (
-		<div className="ui-flex-center w-full h-120 bg-light rounded-2xl">
-			<AnimateSpinner />
-		</div>
-	);
-}
-
 export default function FilePreviewListPanel() {
-	const { files } = useDropzoneFiles();
+	const files = useFileStore(({ files }) => files);
 	const { viewMode, setViewMode } = useViewMode();
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
@@ -80,10 +72,13 @@ export default function FilePreviewListPanel() {
 
 			<div className="flex-1 min-h-0 w-full overflow-y-auto scrollbar-thin">
 				<div ref={containerRef} className="flex flex-col items-center gap-2 w-full md:flex-1">
-					<Suspense fallback={<FullContainerLoading />}>
+					<Suspense
+						fallback={
+							<PdfPreviewSkeleton pageCount={viewMode === 'dual' ? 2 : 1} estimateHeight={containerWidth * DEFAULT_A4_RATIO + 12} />
+						}>
 						{files?.map(({ id, file, pages }, idx) => {
 							const startPageNumber = getTotalPageCount(files.slice(0, idx)) + 1;
-							const pagesHash = pages.map(p => p.id).join('-');
+							const pagesHash = pages.map(({ id }) => id).join('-');
 
 							return (
 								<PdfPreview

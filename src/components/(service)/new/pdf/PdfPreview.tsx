@@ -154,6 +154,8 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 					const ratio = viewportRatioCache.current.get(cacheKey)!;
 					heights.push(ratio * width + PADDING);
 				} else {
+					if (signal?.aborted) return undefined;
+
 					const page = await pdf.getPage(pageItem.sourcePageNumber);
 					const viewport = page.getViewport({ scale: 1, rotation: pageItem.rotation || 0 });
 
@@ -171,6 +173,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 			return heights;
 		} catch (e) {
+			if (signal?.aborted) return undefined;
 			if (e instanceof Error && e.message === 'Calculation aborted') {
 				return undefined;
 			}
@@ -194,7 +197,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		try {
 			const heights = await calculateHeights(pdf, containerWidth);
 
-			// abort되지 않았고 결과가 있으면 업데이트
+			// not aborted and have result
 			if (!abortController.signal.aborted && heights) {
 				setPageHeights(heights);
 			}
@@ -208,11 +211,24 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	const handleDocumentLoadSuccess = async (pdf: PDFDocumentProxy) => {
 		pdfDocumentProxyRef.current = pdf;
 
-		const heights = await calculateHeights(pdf, containerWidth);
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+		}
 
-		if (heights) {
-			setPageHeights(heights);
-			setLoaded(true);
+		const abortController = new AbortController();
+		abortControllerRef.current = abortController;
+
+		try {
+			const heights = await calculateHeights(pdf, containerWidth, abortController.signal);
+
+			if (!abortController.signal.aborted && heights) {
+				setPageHeights(heights);
+				setLoaded(true);
+			}
+		} catch (e) {
+			if (!abortController.signal.aborted) {
+				console.error('Error handling document load:', e);
+			}
 		}
 	};
 

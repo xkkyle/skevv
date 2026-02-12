@@ -15,7 +15,6 @@ import {
 	SidebarMenu,
 	SidebarMenuItem,
 	SidebarMenuButton,
-	SidebarRail,
 	SidebarTrigger,
 	UserProfile,
 } from '@/components';
@@ -83,8 +82,6 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
-
-			<SidebarRail />
 
 			<SidebarFooter>
 				<div className="flex flex-col">

@@ -6,7 +6,7 @@ export default function PdfPreviewSkeleton({
 	description = '',
 }: {
 	pageCount?: number;
-	estimateHeight?: number;
+	estimateHeight?: number | `${number}%`;
 	description?: string;
 }) {
 	return (
