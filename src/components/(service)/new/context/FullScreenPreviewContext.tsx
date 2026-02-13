@@ -88,7 +88,6 @@ export default function FullScreenPreviewContext({ isOpen, toggle }: FullScreenP
 								variant="ghost"
 								title="Scroll to the top of container"
 								onClick={() => {
-									console.log(containerRef.current);
 									containerRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 								}}>
 								<ArrowUp size={18} />
