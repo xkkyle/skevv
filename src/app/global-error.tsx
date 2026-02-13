@@ -5,6 +5,7 @@ import React from 'react';
 import { Rotate3d } from 'lucide-react';
 import { Button } from '@/components';
 import { route } from '@/constants';
+import Link from 'next/link';
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
 	const router = useRouter();
@@ -17,11 +18,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 		<html>
 			<body>
 				<div className="flex flex-col justify-center items-center flex-1 gap-4 w-screen h-screen">
-					<h1 className="font-black text-4xl text-center">Skevv</h1>
-					<h2 className="font-bold text-xl">페이지에 문제가 있습니다.</h2>
+					<h1 className="font-black text-4xl text-center rounded-full hover:bg-light">
+						<Link href={route.SERVICE.ROOT}>Skevv</Link>
+					</h1>
+					<h2 className="font-bold text-xl">Something wrong with this page</h2>
 					<div className="flex items-center gap-2">
 						<Button onClick={() => reset()} variant="secondary">
-							<Rotate3d size={18} /> 재시도
+							<Rotate3d size={18} /> Retry
 						</Button>
 						<Button
 							type="button"
@@ -29,7 +32,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 								router.push(route.SERVICE.ROOT);
 								router.refresh();
 							}}>
-							홈으로 가기
+							Go Home
 						</Button>
 					</div>
 				</div>
