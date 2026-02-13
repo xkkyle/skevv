@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CirclePause } from 'lucide-react';
+import { ArrowRight, CirclePause } from 'lucide-react';
 import {
 	type ProcessedFileList,
 	AlertDialog,
@@ -135,17 +135,23 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					onClose={onClose}
 				/>
 				{currentStep === 'merge' && isLoading && (
-					<div className="ui-flex-center-between gap-2">
-						<Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />
-						<Button
-							type="button"
-							variant="outline"
-							onClick={() => {
-								stopMerge();
-							}}>
-							<CirclePause />
-							Stop
-						</Button>
+					<div className="flex flex-col gap-2">
+						<div className="ui-flex-center-between gap-2">
+							<Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => {
+									stopMerge();
+								}}>
+								<CirclePause />
+								Stop
+							</Button>
+						</div>
+						<div className="flex items-center gap-2 text-sm text-gray-500">
+							<ArrowRight size={12} />
+							<span>{`If it doesn't stop, press Stop button again`}</span>
+						</div>
 					</div>
 				)}
 

@@ -37,8 +37,8 @@ function usePdfWorker() {
 
 	const abort = React.useCallback(() => {
 		const taskId = taskIdRef.current;
-
 		if (!taskId) return;
+
 		workerRef.current?.terminate();
 		workerRef.current = createWorker();
 
@@ -63,11 +63,12 @@ function usePdfWorker() {
 		workerRef.current?.postMessage(message, buffers);
 
 		const response = await promise;
-		taskIdRef.current = null;
 
 		if (!response.ok) {
 			throw new Error(response.error);
 		}
+
+		taskIdRef.current = null;
 
 		return response.bytes;
 	}, []);
