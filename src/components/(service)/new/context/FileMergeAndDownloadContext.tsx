@@ -142,7 +142,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					onClose={onClose}
 				/>
 				{currentStep === 'merge' && isLoading && (
-					<div className="flex flex-col gap-2">
+					<div className="flex flex-col gap-2 p-2 bg-gray-100 rounded-md">
 						<div className="ui-flex-center-between gap-2">
 							<Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />
 							<Button
@@ -156,8 +156,8 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 							</Button>
 						</div>
 						<div className="flex items-center gap-2 ml-2 text-sm text-gray-500">
-							<ArrowRight size={12} />
-							<span>{`If it doesn't stop, press Stop button again`}</span>
+							<ArrowRight size={16} />
+							<span>{`Stopping may take a moment for large files. If it doesn’t stop, press the Stop button again.`}</span>
 						</div>
 					</div>
 				)}

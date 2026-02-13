@@ -131,6 +131,7 @@ export default function FileMergeAndDownload({
 	};
 
 	const resetAll = () => {
+		onClose();
 		onReset();
 
 		// step=merge, mergedResult=null
