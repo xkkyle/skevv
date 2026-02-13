@@ -162,12 +162,12 @@ export default function FileListPanel() {
 									className="ui-flex-center min-h-64 w-full h-full cursor-pointer sm:min-h-100">
 									{loading ? (
 										<div className="inline-flex items-center gap-2 text-white">
-											<AnimateSpinner />
+											<AnimateSpinner size={16} />
 											<span className="font-medium">Processing...</span>
 										</div>
 									) : accepting ? (
 										<div className="inline-flex items-center gap-2">
-											<AnimateSpinner />
+											<AnimateSpinner size={16} />
 											<span className="text-gray-900 font-medium">Drop your files here!</span>
 										</div>
 									) : rejecting ? (
