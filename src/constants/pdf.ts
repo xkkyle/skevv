@@ -9,7 +9,7 @@ const DEFAULT_A4_RATIO = 1.414; // A4 portrait
 
 const DEVICE_PIXEL_RATIO = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1.5;
 
-const LARGE_FILE_SIZE_BREAKPOINT = 10 * 1024 * 1024;
+const LARGE_FILE_SIZE_BREAKPOINT = 3 * 10 * 1024 * 1024;
 const LARGE_PAGE_LENGTH = 100;
 
 const formatBytes = (bytes: number, decimals = 1) => {

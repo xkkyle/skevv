@@ -61,6 +61,13 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const abortRef = React.useRef<(() => void) | null>(null);
 	const [showConfirm, setShowConfirm] = React.useState(false);
 
+	React.useEffect(() => {
+		if (!isOpen && isLoading) {
+			console.log('here');
+			abortRef.current?.();
+		}
+	}, [isOpen, isLoading]);
+
 	const pageCount = getTotalPageCount(files);
 
 	// const isOneFile = files.length < 2;
@@ -162,7 +169,12 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								Cancel
 							</Button>
 						</DialogClose>
-						<FileMergeButton isLoading={isLoading} Loading={<Loading />} mergeFormId={mergeFormId} disabled={currentStep !== 'merge'} />
+						<FileMergeButton
+							isLoading={isLoading}
+							Loading={<Loading />}
+							mergeFormId={mergeFormId}
+							disabled={isLoading || currentStep !== 'merge'}
+						/>
 					</DialogFooter>
 				)}
 			</DialogContent>

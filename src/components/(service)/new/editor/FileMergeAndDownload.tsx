@@ -64,6 +64,8 @@ export default function FileMergeAndDownload({
 	const setMergedResult = useMergeFlowStore(({ setMergedResult }) => setMergedResult);
 	const resetMergeFlow = useMergeFlowStore(({ reset }) => reset);
 
+	const inFlightRef = React.useRef(false);
+
 	const filesKey = React.useMemo(
 		() =>
 			files
@@ -94,6 +96,10 @@ export default function FileMergeAndDownload({
 
 	const onSubmit = async (values: FileNameSchema) => {
 		if (files?.length === 0) return;
+		if (step !== 'merge') return;
+		if (inFlightRef.current) return;
+
+		inFlightRef.current = true;
 
 		try {
 			const { success, message, downloadUrl, fileName, fileSize } = await startTransition(
@@ -110,6 +116,8 @@ export default function FileMergeAndDownload({
 			const message = error instanceof Error ? error.message : ASYNC_PDF_MESSAGE.MERGE.ERROR.CANCEL_FILE_SAVE;
 
 			toast.error(message);
+		} finally {
+			inFlightRef.current = false;
 		}
 	};
 
