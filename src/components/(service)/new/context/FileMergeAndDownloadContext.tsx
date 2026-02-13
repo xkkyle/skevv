@@ -58,6 +58,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 
 	const mergeFormId = React.useId();
 	const abortRef = React.useRef<(() => void) | null>(null);
+	const [showConfirm, setShowConfirm] = React.useState(false);
 
 	const pageCount = getTotalPageCount(files);
 
@@ -80,10 +81,16 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const onClose = () => toggle(false);
 
 	const handleOpenChange = (open: boolean) => {
-		if (isLoading) {
+		const isLargeFile = getTotalFileSize(files) > LARGE_FILE_SIZE_BREAKPOINT || getTotalPageCount(files) > LARGE_PAGE_LENGTH;
+		if (!open && isLoading) {
+			if (isLargeFile) {
+				// 파일이 클 때만 confirm
+				setShowConfirm(true);
+				return;
+			}
+
 			stopMerge();
 		}
-
 		toggle(open);
 	};
 
@@ -97,6 +104,21 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
 			</DialogTrigger>
 			<DialogContent className="w-[90dvw] max-w-[500px]" onOpenAutoFocus={e => e.preventDefault()}>
+				<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+					<AlertDialogContent>
+						<AlertDialogTitle>Cancel the merge?</AlertDialogTitle>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Continue merging</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={() => {
+									stopMerge();
+									toggle(false);
+								}}>
+								Stop
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 				<DialogHeader>
 					<DialogTitle className="text-xl">{title}</DialogTitle>
 					<DialogDescription className="text-sm text-gray-500 font-medium">{description}</DialogDescription>
