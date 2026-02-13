@@ -8,6 +8,7 @@ import {
 	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
+	AlertDialogDescription,
 	AlertDialogFooter,
 	AlertDialogTitle,
 	Button,
@@ -81,16 +82,15 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 	const onClose = () => toggle(false);
 
 	const handleOpenChange = (open: boolean) => {
-		const isLargeFile = getTotalFileSize(files) > LARGE_FILE_SIZE_BREAKPOINT || getTotalPageCount(files) > LARGE_PAGE_LENGTH;
 		if (!open && isLoading) {
-			if (isLargeFile) {
-				// 파일이 클 때만 confirm
+			if (getTotalFileSize(files) > LARGE_FILE_SIZE_BREAKPOINT || getTotalPageCount(files) > LARGE_PAGE_LENGTH) {
 				setShowConfirm(true);
 				return;
 			}
 
 			stopMerge();
 		}
+
 		toggle(open);
 	};
 
@@ -107,6 +107,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 				<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
 					<AlertDialogContent>
 						<AlertDialogTitle>Cancel the merge?</AlertDialogTitle>
+						<AlertDialogDescription aria-label="Ask to cancel merge">Your progress will be lost</AlertDialogDescription>
 						<AlertDialogFooter>
 							<AlertDialogCancel>Continue merging</AlertDialogCancel>
 							<AlertDialogAction
@@ -114,6 +115,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 									stopMerge();
 									toggle(false);
 								}}>
+								<CirclePause />
 								Stop
 							</AlertDialogAction>
 						</AlertDialogFooter>
