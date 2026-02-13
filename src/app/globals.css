@@ -209,12 +209,12 @@
 		@apply bg-black text-white;
 	}
 
-	.bg-light {
-		@apply bg-gray-50;
-	}
-
 	.ui-flex-center {
 		@apply flex justify-center items-center;
+	}
+
+	.ui-flex-center-between {
+		@apply flex justify-between items-center;
 	}
 
 	.min-h-svh {
@@ -258,16 +258,14 @@
 		background-color: rgba(100, 100, 100, 0.5);
 	}
 
+	.bg-light {
+		@apply bg-gray-50;
+	}
+
 	.bg-gradient-skeleton {
 		background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
 		background-size: 200% 100%;
 		animation: shine 1.5s infinite;
-	}
-
-	@keyframes shine {
-		to {
-			background-position-x: -200%;
-		}
 	}
 
 	.bg-gradient-blue-50 {
@@ -317,5 +315,26 @@
 	.react-pdf__Page__canvas {
 		max-width: 100% !important;
 		height: auto !important;
+	}
+
+	@keyframes shine {
+		to {
+			background-position-x: -200%;
+		}
+	}
+
+	@keyframes highlight-fade {
+		0% {
+			background-color: rgb(239 246 255); /* bg-blue-50 */
+			border-color: rgb(96 165 250); /* border-blue-400 */
+		}
+		100% {
+			background-color: rgb(249 250 251);
+			border-color: var(--color-muted);
+		}
+	}
+
+	.animate-highlight {
+		animation: highlight-fade 1.5s ease-out forwards;
 	}
 }

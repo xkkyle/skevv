@@ -45,7 +45,7 @@ export default function LoginForm() {
 						name="password"
 						render={({ field }) => (
 							<FormItem>
-								<div className="flex justify-between items-center">
+								<div className="ui-flex-center-between">
 									<FormLabel>Password</FormLabel>
 									<Button asChild variant="link" size="sm" className="h-auto text-gray-500 text-center">
 										<Link href={route.AUTH.FORGOT_PASSWORD}>Forgot Password?</Link>

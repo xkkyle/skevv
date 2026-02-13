@@ -24,7 +24,7 @@ export default function Nav() {
 	return (
 		<>
 			<nav id="layout-nav" className={cn('fixed flex justify-center w-full z-40 md:hidden', isSideNavOpen ? 'bg-white' : '')}>
-				<div className="flex justify-between items-center gap-4 w-full px-3 py-2 h-[var(--global-layout-nav-height)] border-b border-muted bg-white backdrop-blur-lg">
+				<div className="ui-flex-center-between gap-4 w-full px-3 py-2 h-[var(--global-layout-nav-height)] border-b border-muted bg-white backdrop-blur-lg">
 					<h1 className="inline-flex justify-center items-center px-2" onClick={() => setIsSideNavOpen(false)}>
 						<Link href={route.SERVICE.ROOT} className="inline-flex items-center gap-2 h-7 shrink-0">
 							<Image src={skevvSVG} alt={'Skevv'} width={24} height={24} priority />
@@ -50,7 +50,7 @@ export default function Nav() {
 				<MotionBlock onClick={toggle} className="rounded-lg">
 					<Link
 						href={route.SERVICE.WRITE}
-						className="flex justify-between items-center px-3 w-full min-h-[60px] rounded-lg font-medium cursor-pointer active:bg-light">
+						className="ui-flex-center-between px-3 w-full min-h-[60px] rounded-lg font-medium cursor-pointer active:bg-light">
 						<span>New Merge</span>
 						<ArrowRightIcon size={20} />
 					</Link>
@@ -58,13 +58,13 @@ export default function Nav() {
 				<MotionBlock onClick={toggle} className="rounded-lg">
 					<Link
 						href={route.SERVICE.ARCHIVES}
-						className="flex justify-between items-center px-3 w-full min-h-[60px] font-medium rounded-lg cursor-pointer active:bg-light">
+						className="ui-flex-center-between px-3 w-full min-h-[60px] font-medium rounded-lg cursor-pointer active:bg-light">
 						Archives
 						<ArrowRightIcon size={20} />
 					</Link>
 				</MotionBlock>
 				<div className="w-full h-px rounded-full bg-muted" />
-				<div className="flex justify-between items-center mx-2 min-h-[60px] lg:mx-0">
+				<div className="ui-flex-center-between mx-2 min-h-[60px] lg:mx-0">
 					<UserProfile inSideNav={true} />
 				</div>
 			</div>

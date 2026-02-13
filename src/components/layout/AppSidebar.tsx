@@ -32,7 +32,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
 
 	return (
 		<Sidebar {...props} className="bg-white" collapsible="icon">
-			<SidebarHeader className="flex flex-row items-center justify-between gap-2 py-3">
+			<SidebarHeader className="ui-flex-center-between flex-row gap-2 py-3">
 				<h1 className="flex justify-center items-center px-2 group-data-[state=collapsed]:hidden">
 					<Link
 						href={route.SERVICE.ROOT}
@@ -58,7 +58,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
 											<Link
 												href={to}
 												className={cn(
-													'flex items-center justify-between gap-2 p-2 text-gray-800 font-medium aspect-square rounded-md transition-colors',
+													'ui-flex-center-between gap-2 p-2 text-gray-800 font-medium aspect-square rounded-md transition-colors',
 
 													'group-data-[state=collapsed]:justify-center',
 													'group-data-[state=collapsed]:gap-0',
