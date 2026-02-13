@@ -2,10 +2,11 @@
 
 import { useInView } from 'react-intersection-observer';
 import { Page } from 'react-pdf';
-import { AnimateSpinner, Badge, Button, type PageItem } from '@/components';
+import { Hash, RotateCcw, RotateCw } from 'lucide-react';
+import { type PageItem, AnimateSpinner, Badge, Button, Skeleton } from '@/components';
 import { DEVICE_PIXEL_RATIO, screenSize } from '@/constants';
 import { useDropzoneFiles, useMediaQuery } from '@/hooks';
-import { Hash, RotateCcw, RotateCw } from 'lucide-react';
+import { getRotationAngle } from '@/utils/pdf';
 
 interface VirtualPageProps {
 	page: PageItem;
@@ -15,11 +16,11 @@ interface VirtualPageProps {
 	containerWidth: number;
 }
 
-function Skeleton({ height }: { height?: React.CSSProperties['height'] }) {
+function CustomSkeleton({ width, height }: { width?: React.CSSProperties['width']; height?: React.CSSProperties['height'] }) {
 	return (
-		<div style={{ height }} className="ui-flex-center w-full bg-light rounded-lg">
+		<Skeleton style={{ width, height }} className="ui-flex-center flex-1 w-full min-h-20 rounded-lg">
 			<AnimateSpinner size={18} />
-		</div>
+		</Skeleton>
 	);
 }
 
@@ -33,12 +34,6 @@ export default function VirtualPage({ page, style, pageNumber, startPageNumber, 
 
 	const { setFiles } = useDropzoneFiles();
 	const { id: pageId } = page;
-
-	const getRotationAngle = ({ page, factor }: { page: PageItem; factor: 'right' | 'left' }) => {
-		const currentRotation = page.rotation || 0;
-		const delta = factor === 'right' ? 90 : -90;
-		return (currentRotation + delta + 360) % 360;
-	};
 
 	const rotatePageOfFile = (factor: 'right' | 'left') => {
 		setFiles(files =>
@@ -71,7 +66,7 @@ export default function VirtualPage({ page, style, pageNumber, startPageNumber, 
 				<Page
 					devicePixelRatio={DEVICE_PIXEL_RATIO}
 					pageNumber={pageNumber}
-					loading={<Skeleton height={style?.height} />}
+					loading={<CustomSkeleton width={style?.width} height={style?.height} />}
 					width={containerWidth}
 					rotate={page.rotation}
 					renderTextLayer={false}
@@ -79,7 +74,7 @@ export default function VirtualPage({ page, style, pageNumber, startPageNumber, 
 					className="ui-flex-center w-full border border-gray-200"
 				/>
 			) : (
-				<Skeleton height={style?.height} />
+				<CustomSkeleton width={style?.width} height={style?.height} />
 			)}
 		</div>
 	);

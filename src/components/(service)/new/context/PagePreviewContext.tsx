@@ -130,7 +130,7 @@ export default function PagePreviewContext({ files, page, isOpen, toggle }: Page
 				<DialogContent className="max-h-[92dvh] overflow-y-auto scrollbar-thin sm:max-w-[min(100vw-2rem,900px)] w-full">
 					<DialogHeader>
 						<DialogTitle className="text-left text-lg">{title}</DialogTitle>
-						<div className="flex justify-between items-center gap-2">
+						<div className="ui-flex-center-between gap-2">
 							<DialogDescription className="max-w-[60dvw] sm:max-w-none sm:w-fit inline-flex items-center gap-1.5 py-1.5 px-2 bg-gray-100 text-gray-500 text-xs font-medium border border-gray-200 rounded-md">
 								<Asterisk size={12} />
 								<span className="truncate">{description}</span>

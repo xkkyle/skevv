@@ -40,8 +40,6 @@ const PADDING = 12;
  */
 
 export default function PdfPreview({ scrollParentRef, file, pages, startPageNumber = 1, containerWidth }: PdfPreviewProps) {
-	const sortedPages = React.useMemo(() => [...pages].sort((prev, curr) => prev.order - curr.order), [pages]);
-
 	const { viewMode } = useViewMode();
 
 	const pdfDocumentProxyRef = React.useRef<PDFDocumentProxy | null>(null);
@@ -53,17 +51,17 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 	const pageGroups = React.useMemo(() => {
 		if (viewMode === 'single') {
-			return sortedPages.map(page => [page]);
+			return pages.map(page => [page]);
 		}
 
 		// Dual Mode
 		const groups: PageItem[][] = [];
-		for (let i = 0; i < sortedPages.length; i += 2) {
-			groups.push(sortedPages.slice(i, i + 2));
+		for (let i = 0; i < pages.length; i += 2) {
+			groups.push(pages.slice(i, i + 2));
 		}
 
 		return groups;
-	}, [sortedPages, viewMode]);
+	}, [pages, viewMode]);
 
 	const getInitialEstimateHeight = React.useMemo(() => {
 		if (pageHeights.length > 0) {
@@ -97,7 +95,20 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		getScrollElement: () => scrollParentRef.current,
 		estimateSize: index => getEstimateHeightSize(index), // calculate each estimated virtualized row height
 		overscan: 3,
+		getItemKey: index => pageGroups[index]?.[0]?.id ?? index, // react-virtual use index key if virtualizer doesn't have getItemkey
 	});
+
+	React.useEffect(() => {
+		setPageHeights([]);
+		rowVirtualizer.measure();
+	}, [pages]);
+
+	React.useEffect(() => {
+		return () => {
+			abortControllerRef.current?.abort();
+			pdfDocumentProxyRef.current?.cleanup();
+		};
+	}, []);
 
 	useDebouncedEffect({
 		callback: () => {
@@ -110,28 +121,10 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	useDebouncedEffect({
 		callback: () => {
 			if (!isLoaded) return;
-
 			recalculateHeights();
 		},
 		effectTriggers: [containerWidth, viewMode, pages],
 	});
-
-	React.useEffect(() => {
-		const abortController = abortControllerRef.current;
-		const pdfDocumentProxy = pdfDocumentProxyRef.current;
-
-		return () => {
-			// component unmount -> cancel calculate
-			if (abortController) {
-				abortController.abort();
-			}
-
-			// PDF doc cleanup
-			if (pdfDocumentProxy) {
-				pdfDocumentProxy.cleanup();
-			}
-		};
-	}, []);
 
 	React.useEffect(() => {
 		viewportRatioCache.current.clear();
@@ -142,12 +135,12 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 		const heights: number[] = [];
 
 		try {
-			for (let idx = 0; idx < sortedPages.length; idx++) {
+			for (let idx = 0; idx < pages.length; idx++) {
 				if (signal?.aborted) {
 					throw new Error('Calculation aborted');
 				}
 
-				const pageItem = sortedPages[idx];
+				const pageItem = pages[idx];
 				const cacheKey = `${pageItem.sourcePageNumber}-${pageItem.rotation}`;
 
 				if (viewportRatioCache.current?.has(cacheKey)) {
@@ -246,7 +239,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 			{file ? (
 				<Document
 					file={file}
-					loading={<PdfPreviewSkeleton pageCount={pages.length} estimateHeight={getEstimateHeightSize(0)} />}
+					loading={<PdfPreviewSkeleton pageCount={viewMode === 'dual' ? 2 : 1} estimateHeight={getEstimateHeightSize(0)} />}
 					onLoadSuccess={handleDocumentLoadSuccess}
 					onLoadError={error => console.error('react-pdf [onLoadError]:', error)}
 					onSourceError={error => console.error('react-pdf [onSourceError]:', error)}
@@ -259,7 +252,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 
 							return (
 								<div
-									key={`group-${groupIndex}`}
+									key={pageGroups[groupIndex]?.[0]?.id ?? `group-${groupIndex}`}
 									style={{
 										position: 'absolute',
 										top: 0,
@@ -275,7 +268,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 											key={page.id}
 											style={{
 												width: pageWidth,
-												height: '100%',
+												height: `${virtualRow.size - PADDING}px`,
 											}}
 											page={page}
 											pageNumber={page.sourcePageNumber}

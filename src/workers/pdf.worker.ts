@@ -41,7 +41,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
 	try {
 		if (message.type === 'abort') {
 			currentTaskId = null;
-			return;
+			throw new Error('Operation aborted');
 		}
 
 		if (message.type === 'merge') {
@@ -57,6 +57,10 @@ self.onmessage = async (event: MessageEvent<Request>) => {
 
 				const loaded = await Promise.all(
 					batch.map(async ([buffer, pages]) => {
+						if (currentTaskId !== message.id) {
+							throw new Error('Operation aborted');
+						}
+
 						const pdf = await PDFDocument.load(buffer);
 
 						return { pdf, pages };
@@ -76,6 +80,10 @@ self.onmessage = async (event: MessageEvent<Request>) => {
 					);
 
 					virtualPages.forEach((page, idx) => {
+						if (currentTaskId !== message.id) {
+							throw new Error('Operation aborted');
+						}
+
 						const rotation = sortedPages[idx].rotation;
 
 						if (rotation) {

@@ -33,7 +33,7 @@ export default function useAdaptiveSensors() {
 
 	const pointerSensors = useSensors(
 		useSensor(PointerSensor, {
-			activationConstraint: { distance: 4 },
+			activationConstraint: { distance: 3 },
 		}),
 		useSensor(KeyboardSensor),
 	);

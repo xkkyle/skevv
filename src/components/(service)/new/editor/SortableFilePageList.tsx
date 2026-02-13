@@ -2,11 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
-import { closestCenter, DndContext, DragEndEvent } from '@dnd-kit/core';
+import { rectIntersection, DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { ScrollArea, SortableFilePage } from '@/components';
+import { type ProcessedFileItem, ScrollArea, SortableFilePage } from '@/components';
 import { useAdaptiveSensors, useDropzoneFiles } from '@/hooks';
-import { type ProcessedFileItem } from '../pdf';
 
 interface SortableFilePagesProps {
 	file: ProcessedFileItem;
@@ -23,15 +22,20 @@ export default function SortableFilePageList({ file, isOpen }: SortableFilePages
 
 	const [previewOpen, setPreviewOpen] = React.useState(false);
 	const [selectedId, setSelectedId] = React.useState<string | null>(null);
+	const [recentlyAdded, setRecentlyAdded] = React.useState<{ id: string; key: number } | null>(null);
 
 	const selectedPage = React.useMemo(() => file.pages.find(page => page.id === selectedId) ?? null, [file.pages, selectedId]);
 
-	const openPreview = (pageId: string) => {
+	const handleDuplicateHighlight = (newPageId: string) => {
+		setRecentlyAdded({ id: newPageId, key: Date.now() });
+	};
+
+	const handleOpenPreview = (pageId: string) => {
 		setSelectedId(pageId);
 		setPreviewOpen(true);
 	};
 
-	const onPreviewOpenChange = (open: boolean) => {
+	const handlePreviewOpenChange = (open: boolean) => {
 		setPreviewOpen(open);
 		if (!open) setSelectedId(null);
 	};
@@ -64,7 +68,7 @@ export default function SortableFilePageList({ file, isOpen }: SortableFilePages
 				<DndContext
 					key={sensorType}
 					sensors={sensors}
-					collisionDetection={closestCenter}
+					collisionDetection={rectIntersection}
 					onDragEnd={(event: DragEndEvent) => handlePageDragEnd(event, file.id)}>
 					<SortableContext items={sortedPages.map(page => page.id)} strategy={verticalListSortingStrategy}>
 						<ScrollArea
@@ -73,7 +77,14 @@ export default function SortableFilePageList({ file, isOpen }: SortableFilePages
 							} overflow-y-auto transition-all will-change-transform duration-150 scrollbar-thin`}>
 							<div className="flex flex-col space-y-2 pb-3 sm:pb-0">
 								{sortedPages.map(page => (
-									<SortableFilePage key={page.id} page={page} onOpenPreview={openPreview} />
+									<SortableFilePage
+										key={page.id}
+										page={page}
+										isRecentlyAdded={page.id === recentlyAdded?.id}
+										animationKey={recentlyAdded?.key}
+										onDuplicateHighlight={handleDuplicateHighlight}
+										onOpenPreview={handleOpenPreview}
+									/>
 								))}
 							</div>
 						</ScrollArea>
@@ -81,7 +92,7 @@ export default function SortableFilePageList({ file, isOpen }: SortableFilePages
 				</DndContext>
 			</div>
 
-			{selectedPage ? <PagePreviewContext files={files} page={selectedPage} isOpen={previewOpen} toggle={onPreviewOpenChange} /> : null}
+			{selectedPage ? <PagePreviewContext files={files} page={selectedPage} isOpen={previewOpen} toggle={handlePreviewOpenChange} /> : null}
 		</>
 	);
 }

@@ -21,6 +21,7 @@ import {
 	prepareMergedFile,
 	downloadMergedFile,
 	Badge,
+	getTotalFileSize,
 } from '@/components';
 import { useDropzoneFiles, usePdfWorker } from '@/hooks';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
@@ -61,10 +62,13 @@ export default function FileMergeAndDownload({
 	const mergedResult = useMergeFlowStore(({ mergedResult }) => mergedResult);
 	const setStep = useMergeFlowStore(({ setStep }) => setStep);
 	const setMergedResult = useMergeFlowStore(({ setMergedResult }) => setMergedResult);
-	const reset = useMergeFlowStore(({ reset }) => reset);
+	const resetMergeFlow = useMergeFlowStore(({ reset }) => reset);
 
 	const filesKey = React.useMemo(
-		() => files.map(({ id, file, pages }) => `${id}-${file.size}-${pages.length}-${pages.map(page => page.rotation).join('|')}`).join('|'),
+		() =>
+			files
+				.map(({ id, file, pages }) => `${id}-${file.size}-${pages.map(page => page.id)}-${pages.map(page => page.rotation).join('|')}`)
+				.join('|'),
 		[files],
 	);
 
@@ -75,10 +79,10 @@ export default function FileMergeAndDownload({
 			const prevKey = mergedResult?.filesKey;
 
 			if (!prevKey || prevKey !== filesKey) {
-				reset();
+				resetMergeFlow();
 			}
 		}
-	}, [isOpen, step, mergedResult?.filesKey, filesKey, reset]);
+	}, [isOpen, step, mergedResult?.filesKey, filesKey, resetMergeFlow]);
 
 	React.useEffect(() => {
 		abortRef.current = abort;
@@ -122,7 +126,7 @@ export default function FileMergeAndDownload({
 		onReset();
 
 		// step=merge, mergedResult=null
-		reset();
+		resetMergeFlow();
 	};
 
 	return (
@@ -149,6 +153,9 @@ export default function FileMergeAndDownload({
 							</li>
 							<li>
 								<Badge variant="secondary">{pageCount} pages</Badge>
+							</li>
+							<li>
+								<Badge variant="secondary">{smartFormatBytes(getTotalFileSize(files))}</Badge>
 							</li>
 						</ul>
 					</form>

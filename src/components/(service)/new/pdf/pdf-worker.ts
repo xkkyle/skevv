@@ -56,6 +56,12 @@ const getTotalPageCount = (files: ProcessedFileList) => {
 	return files.reduce((sum, file) => sum + (file?.pageCount ?? 0), 0);
 };
 
+const getTotalFileSize = (files: ProcessedFileList) => {
+	if (files.length === 0) return 0;
+
+	return files.reduce((sum, file) => sum + file.file.size, 0);
+};
+
 const getProcessedFileListWithCountedPages = async (files: RawFileList): Promise<ProcessedFileList> => {
 	const pageCounts: number[] = [];
 	const batchFiles = pipe(files, chunk(3), toArray);
@@ -191,6 +197,7 @@ export type { PageItem, RawFileItem, ProcessedFileItem, RawFileList, ProcessedFi
 export {
 	ASYNC_PDF_MESSAGE,
 	getTotalPageCount,
+	getTotalFileSize,
 	deletePageFromFiles,
 	getProcessedFileListWithCountedPages,
 	createMergedFileBlob,

@@ -22,6 +22,9 @@ import { usePreviewScroll } from '@/providers';
 
 interface SortableFilePageProps {
 	page: PageItem;
+	isRecentlyAdded?: boolean;
+	animationKey?: number;
+	onDuplicateHighlight: (newPageId: string) => void;
 	onOpenPreview: (pageId: string) => void;
 }
 
@@ -45,7 +48,13 @@ function TriggerButton({ onClick, ...props }: { onClick: React.MouseEventHandler
 	);
 }
 
-export default function SortableFilePage({ page, onOpenPreview }: SortableFilePageProps) {
+export default function SortableFilePage({
+	page,
+	isRecentlyAdded,
+	animationKey,
+	onDuplicateHighlight,
+	onOpenPreview,
+}: SortableFilePageProps) {
 	const { scrollToPage } = usePreviewScroll();
 
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -67,15 +76,15 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 	const duplicatePage = ({ pageId }: { pageId: PageItem['id'] }) => {
 		const idx = pageId.indexOf('-page-');
 		const fileId = idx === -1 ? pageId : pageId.slice(0, idx);
+		const id = `${fileId}-page-${Date.now()}` as const;
 
 		setFiles(prevFiles =>
 			prevFiles.map(file => {
 				if (file.id !== fileId) return file;
 
-				const id = `${fileId}-page-${Date.now()}` as const;
-				const newPage: PageItem = { ...page, id, sourcePageNumber: page.sourcePageNumber, order: page.order + 1 };
+				const newPage: PageItem = { ...page, id, sourcePageNumber: page.sourcePageNumber, order: page.order + 1, rotation: 0 };
 
-				const pageIndex = file.pages.findIndex(p => p.id === page.id);
+				const pageIndex = file.pages.findIndex(page => page.id === pageId);
 				const newPages = [...file.pages];
 				newPages.splice(pageIndex + 1, 0, newPage);
 
@@ -91,6 +100,7 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 				};
 			}),
 		);
+		onDuplicateHighlight(id);
 	};
 
 	const deletePageWithUndo = ({ pageId }: { pageId: PageItem['id'] }) => {
@@ -136,13 +146,15 @@ export default function SortableFilePage({ page, onOpenPreview }: SortableFilePa
 
 	return (
 		<div
+			key={isRecentlyAdded ? animationKey : undefined}
 			ref={setNodeRef}
 			{...attributes}
 			style={getTransformStyleOnSortableContext(transform, transition)}
 			onClick={handlePageClick}
 			className={cn(
-				'flex justify-between items-center gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer sm:focus:border-gray-300 transition-colors',
+				'ui-flex-center-between gap-2 p-2 w-full bg-light border border-muted rounded-lg cursor-pointer sm:focus:border-gray-300 transition-colors',
 				isDragging ? 'opacity-85 border-2 border-dashed bg-gray-50' : 'opacity-100',
+				isRecentlyAdded ? 'animate-highlight' : '',
 			)}>
 			<div className="ui-flex-center gap-2">
 				<Button

@@ -25,9 +25,9 @@ export default function FilePreviewListPanel() {
 
 	return (
 		<div className="hidden flex-col flex-1 gap-2 min-h-0 col-span-full p-3 md:flex md:col-span-4">
-			<div className="flex justify-between items-center min-h-8">
+			<div className="ui-flex-center-between min-h-8">
 				<h3 className="text-md font-bold">Preview</h3>
-				<div className="flex justify-between items-center gap-2">
+				<div className="ui-flex-center-between gap-2">
 					<Button
 						type="button"
 						size="icon-sm"
@@ -85,7 +85,7 @@ export default function FilePreviewListPanel() {
 									key={`${id}-${startPageNumber}-${pagesHash}`}
 									scrollParentRef={containerRef}
 									file={file}
-									pages={pages}
+									pages={pages.toSorted((prev, curr) => prev.order - curr.order)}
 									startPageNumber={startPageNumber}
 									containerWidth={containerWidth}
 								/>

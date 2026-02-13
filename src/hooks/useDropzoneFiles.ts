@@ -1,19 +1,16 @@
 'use client';
 
 import React from 'react';
-import { DropEvent, FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
+import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 import { type RawFileItem, getProcessedFileListWithCountedPages } from '@/components';
 import { useFileStore } from '@/store';
 import { PDF_HQ } from '@/constants';
 
-const inputId = {
-	OUTER: 'file-dropzone-outer',
-	INNER: 'file-dropzone-inner',
-} as const;
+const ACCEPT_TYPE = { [PDF_HQ.KEY]: PDF_HQ.VALUE } as const;
 
-function isDragEvent(e: unknown): e is React.DragEvent<HTMLElement> {
-	return !!e && typeof e === 'object' && 'target' in e;
+function sortByFileName(prev: RawFileItem, curr: RawFileItem) {
+	return prev.file.name.localeCompare(curr.file.name, undefined, { numeric: true, sensitivity: 'base' });
 }
 
 export default function useDropzoneFiles() {
@@ -22,25 +19,13 @@ export default function useDropzoneFiles() {
 
 	const hasFiles = files.length !== 0;
 
-	//TODO: Additional Validation for file thumbnail
-	const onDrop = async (acceptedFiles: FileWithPath[], rejections: FileRejection[], event: DropEvent) => {
+	const onDrop = async (acceptedFiles: FileWithPath[], rejections: FileRejection[]) => {
 		const willUpdateFiles: RawFileItem[] = acceptedFiles.map(file => ({
 			id: `${file.name}-${crypto.randomUUID()}`,
 			file,
 		}));
 
-		let inputIdValue: string | undefined;
-		if (isDragEvent(event)) {
-			inputIdValue = (event.target as HTMLElement & { dataset: { inputId?: string } }).dataset.inputId;
-		}
-
-		const sortByFileName = (prev: RawFileItem, curr: RawFileItem) =>
-			prev.file.name.localeCompare(curr.file.name, undefined, { numeric: true, sensitivity: 'base' });
-
-		const fileList =
-			!hasFiles || inputIdValue === inputId.OUTER
-				? [...(hasFiles ? files : []), ...willUpdateFiles].sort(sortByFileName)
-				: [...files, ...willUpdateFiles.sort(sortByFileName)];
+		const fileList = !hasFiles ? willUpdateFiles.sort(sortByFileName) : [...files, ...willUpdateFiles.sort(sortByFileName)];
 
 		setIsLoading(true);
 
@@ -66,8 +51,9 @@ export default function useDropzoneFiles() {
 	};
 
 	const onReset = async () => {
+		setIsLoading(true);
+
 		try {
-			setIsLoading(true);
 			await new Promise(resolve => setTimeout(resolve, 300));
 
 			resetFiles();
@@ -77,8 +63,6 @@ export default function useDropzoneFiles() {
 			setIsLoading(false);
 		}
 	};
-
-	const ACCEPT_TYPE = { [PDF_HQ.KEY]: PDF_HQ.VALUE };
 
 	const dropzone = useDropzone({
 		accept: ACCEPT_TYPE,

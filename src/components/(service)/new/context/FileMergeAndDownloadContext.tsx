@@ -1,7 +1,15 @@
 'use client';
 
 import React from 'react';
+import { CirclePause } from 'lucide-react';
 import {
+	type ProcessedFileList,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogTitle,
 	Button,
 	Callout,
 	Dialog,
@@ -15,12 +23,12 @@ import {
 	FileMergeAndDownload,
 	FileMergeButton,
 	Kbd,
+	getTotalFileSize,
+	getTotalPageCount,
 } from '@/components';
-import { type ProcessedFileList, getTotalPageCount } from '../pdf';
 import { useLoading, useMediaQuery } from '@/hooks';
-import { screenSize } from '@/constants';
+import { LARGE_FILE_SIZE_BREAKPOINT, LARGE_PAGE_LENGTH, screenSize } from '@/constants';
 import { useMergeFlowStore } from '@/store/useMergeFlowStore';
-import { CirclePause } from 'lucide-react';
 
 interface FileMergeAndDownloadContextProps {
 	files: ProcessedFileList;
@@ -44,11 +52,12 @@ function TriggerButton({ pageCount, isSMDown, disabled = false, ...props }: { pa
 
 export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: FileMergeAndDownloadContextProps) {
 	const currentStep = useMergeFlowStore(({ step }) => step);
-	const mergeFormId = React.useId();
-	const abortRef = React.useRef<() => void | null>(null);
 
 	const { Loading, isLoading, startTransition } = useLoading();
 	const isSMDown = useMediaQuery(screenSize.MAX_SM);
+
+	const mergeFormId = React.useId();
+	const abortRef = React.useRef<(() => void) | null>(null);
 
 	const pageCount = getTotalPageCount(files);
 
@@ -65,19 +74,24 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 
 	const stopMerge = () => {
 		// if merge is in progress, then abort;
-		if (isLoading && abortRef.current) {
-			abortRef.current();
-		}
+		abortRef.current?.();
 	};
 
 	const onClose = () => toggle(false);
+
+	const handleOpenChange = (open: boolean) => {
+		if (isLoading) {
+			stopMerge();
+		}
+
+		toggle(open);
+	};
 
 	return (
 		<Dialog
 			open={isOpen}
 			onOpenChange={open => {
-				toggle(open);
-				if (!open) stopMerge();
+				handleOpenChange(open);
 			}}>
 			<DialogTrigger asChild>
 				<TriggerButton pageCount={pageCount} isSMDown={isSMDown} />
@@ -96,17 +110,24 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 					startTransition={startTransition}
 					onClose={onClose}
 				/>
-				{isLoading && <Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />}
 				{currentStep === 'merge' && isLoading && (
-					<Button type="button" variant="outline" onClick={stopMerge}>
-						<CirclePause />
-						Stop Merging
-					</Button>
+					<div className="ui-flex-center-between gap-2">
+						<Callout message="Please wait for a few seconds..." icon={<Loading />} className="w-full" />
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => {
+								stopMerge();
+							}}>
+							<CirclePause />
+							Stop
+						</Button>
+					</div>
 				)}
 
 				{currentStep === 'merge' && (
 					<DialogFooter className="pt-3 border-t border-muted">
-						<DialogClose asChild onClick={stopMerge}>
+						<DialogClose asChild>
 							<Button type="button" variant="outline">
 								Cancel
 							</Button>

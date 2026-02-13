@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { BetweenHorizonalEnd, ChevronRight, EllipsisVertical, FileText, Plus } from 'lucide-react';
-import { closestCenter, DndContext, DragEndEvent } from '@dnd-kit/core';
+import { rectIntersection, DndContext, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { toast } from 'sonner';
 import { Button, MotionBlock, SortableFile, FileMergeAndDownloadContext, Input, AnimateSpinner, FileInsertSkeleton } from '@/components';
@@ -18,15 +18,14 @@ export default function FileListPanel() {
 		isLoading,
 	} = useDropzoneFiles();
 
+	const { fileAccordions, isSomeAccordionOpen, toggle, toggleAll, closeAll } = useFileAccordions({ files });
+	const { sensors, sensorType } = useAdaptiveSensors();
+
 	const isXSDown = useMediaQuery(screenSize.MAX_XS);
 
 	const fileInputId = React.useId();
 	const [isConfirmContextOpen, setIsConfirmContextOpen] = React.useState(false);
 	const [currentDragFilesCount, setCurrentDragFilesCount] = React.useState(0);
-
-	const { fileAccordions, isSomeAccordionOpen, toggle, toggleAll, closeAll } = useFileAccordions({ files });
-
-	const { sensors, sensorType } = useAdaptiveSensors();
 
 	const loading = isLoading;
 	const accepting = !isLoading && isDragActive && isDragAccept;
@@ -102,7 +101,7 @@ export default function FileListPanel() {
 	return (
 		<div className="relative col-span-full p-3 border-muted md:col-span-2 md:border-r">
 			<div className="flex flex-col gap-2 max-h-screen h-full">
-				<div className="flex justify-between items-center">
+				<div className="ui-flex-center-between">
 					<div>
 						<h3
 							className="flex items-center gap-2 p-1.5 text-md font-bold rounded-md cursor-pointer transition-colors hover:bg-muted"
@@ -121,7 +120,7 @@ export default function FileListPanel() {
 					</div>
 				</div>
 
-				<DndContext key={sensorType} sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+				<DndContext key={sensorType} sensors={sensors} collisionDetection={rectIntersection} onDragEnd={handleDragEnd}>
 					<SortableContext items={files.map(({ id }) => id)} strategy={verticalListSortingStrategy}>
 						<div
 							className="flex flex-col flex-1 shrink-0 min-h-0 items-center gap-1 pb-2 w-full h-full overflow-y-scroll scrollbar-thin touch-pan-y md:min-h-0 sm:pb-16"
