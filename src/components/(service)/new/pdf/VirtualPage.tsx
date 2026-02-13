@@ -18,7 +18,7 @@ interface VirtualPageProps {
 
 function CustomSkeleton({ width, height }: { width?: React.CSSProperties['width']; height?: React.CSSProperties['height'] }) {
 	return (
-		<Skeleton style={{ width, height }} className="ui-flex-center flex-1 w-full min-h-20 rounded-lg">
+		<Skeleton style={{ width, height }} className="ui-flex-center flex-1 w-full min-h-20">
 			<AnimateSpinner size={18} />
 		</Skeleton>
 	);

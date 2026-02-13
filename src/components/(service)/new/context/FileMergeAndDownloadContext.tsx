@@ -148,7 +148,7 @@ export default function FileMergeAndDownloadContext({ files, isOpen, toggle }: F
 								Stop
 							</Button>
 						</div>
-						<div className="flex items-center gap-2 text-sm text-gray-500">
+						<div className="flex items-center gap-2 ml-2 text-sm text-gray-500">
 							<ArrowRight size={12} />
 							<span>{`If it doesn't stop, press Stop button again`}</span>
 						</div>
