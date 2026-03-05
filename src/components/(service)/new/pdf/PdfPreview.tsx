@@ -101,7 +101,7 @@ export default function PdfPreview({ scrollParentRef, file, pages, startPageNumb
 	React.useEffect(() => {
 		setPageHeights([]);
 		rowVirtualizer.measure();
-	}, [pages]);
+	}, [pages, rowVirtualizer]);
 
 	React.useEffect(() => {
 		return () => {

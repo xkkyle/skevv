@@ -1,57 +1,61 @@
-import { FileWithPath } from 'react-dropzone';
 import { toast } from 'sonner';
-import { openDB, saveTempFile, TEMP_FILE_STORE } from './db';
-import { type PageItem } from '@/components';
+import { getTotalFileSize, type ProcessedFileItem } from '@/components';
+import { loadSession, saveSession } from './db';
 
 /**
- * {
-  id: "example.pdf",
+ * 
+	id: 'current'
+	files : {
+  id: uuid,
+	name: "example.pdf",
   blob: Blob,              // 실제 PDF 데이터
   pageCount: 120,
   pages: [
-    { id: "xxx-page-1", order: 0 },
-    { id: "xxx-page-2", order: 1 },
-  ],
-  updatedAt: 1710000000000
+    { id: "xxx-page-1", order: 0 , sourcePageNumber: 1, rotation: 0},
+    { id: "xxx-page-2", order: 1, sourcePageNumber: 1, rotation: 0 },
+	]}[],
+  updatedAt: 1710000000000 
 }
  */
 
-const handleSave = async ({ file, pageCount, pages }: { file: FileWithPath; pageCount: number; pages: PageItem[] }) => {
+const handleSave = async ({
+	processedFiles,
+	actionAfterSuccess,
+}: {
+	processedFiles: ProcessedFileItem[];
+	actionAfterSuccess?: () => void;
+}) => {
 	try {
-		await saveTempFile({
-			id: file.name, // 또는 uuid
-			blob: file, // File === Blob
-			pageCount,
-			pages,
-		});
+		const tempFileData = processedFiles.map(({ id, file, pageCount, pages }) => ({
+			id,
+			name: file.name,
+			blob: file,
+			pageCount: pageCount,
+			pages: pages,
+		}));
 
-		toast.success('저장 완료');
+		await saveSession({ files: tempFileData, totalSizeOfAllFiles: getTotalFileSize(processedFiles) });
+		actionAfterSuccess?.();
 	} catch (e) {
 		console.error(e);
 		toast.error('저장 실패');
 	}
 };
 
-export async function loadTempFile(id: string) {
-	const db = await openDB();
+// TODO: actions 외부에서 주입하기
 
-	return new Promise<unknown>((resolve, reject) => {
-		const tx = db.transaction(TEMP_FILE_STORE, 'readonly');
-		const store = tx.objectStore(TEMP_FILE_STORE);
+const handleLoad = async () => {
+	try {
+		const session = await loadSession();
+		if (!session) return null;
 
-		const req = store.get(id);
-		req.onsuccess = () => {
-			resolve(req.result);
-			toast.success('이어서 작업하기');
-		};
-		req.onerror = () => {
-			reject(req.error);
-			toast.error('불러오기 실패');
-		};
-	});
-}
+		toast.success('이어서 작업하기');
+		return session.files;
+	} catch (e) {
+		console.error(e);
+		toast.error('불러오기 실패');
+		return null;
+	}
+};
 
-// const temp = await loadTempFile('example.pdf');
-// const pdfBlob = temp.blob;
-
-export { handleSave };
+export { handleSave, handleLoad };
